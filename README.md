@@ -43,7 +43,7 @@ npx shadcn@latest init
 
 添加组件
 ```shell
-npx shadcn@latest add button
+npx shadcn@latest add avatar
 ```
 
 react-icons 图标 https://react-icons.github.io/react-icons

@@ -2,6 +2,7 @@ import {createBrowserRouter, useRouteError} from "react-router";
 import App from "../App.tsx";
 import TestIndex from "@/pages/test/test.tsx";
 import HomeLayout from "@/pages/home/home-layout.tsx";
+import LoginIndex from "@/pages/auth/login/login-index.tsx";
 
 
 
@@ -39,6 +40,10 @@ const Router = createBrowserRouter([
     {
         path: "/home",
         element: <App/>,
+    },
+    {
+        path: "/login",
+        Component: LoginIndex,
     },
     {
         path: "/test",
