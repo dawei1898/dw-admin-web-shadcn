@@ -7,8 +7,8 @@ function App() {
 
   return (
     <>
-      <div>
-         hello world
+      <div className='flex justify-center items-center min-h-screen w-full'>
+          <p className='text-lg font-bold'>hello world</p>
       </div>
     </>
   )
