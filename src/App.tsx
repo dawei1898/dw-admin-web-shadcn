@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import {Button} from "@/components/ui/button.tsx";
 
 
 
@@ -7,8 +8,9 @@ function App() {
 
   return (
     <>
-      <div className='flex justify-center items-center min-h-screen w-full'>
+      <div className='flex flex-col justify-center items-center min-h-svh w-full gap-4'>
           <p className='text-lg font-bold'>hello world</p>
+          <Button> send </Button>
       </div>
     </>
   )

@@ -36,6 +36,8 @@ shadcn/ui官网  https://ui.shadcn.com
 
 安装 shadcn/ui https://ui.shadcn.com/docs/installation/vite
 ```shell
+npm install -D @types/node
+
 npx shadcn@latest init
 ```
 
