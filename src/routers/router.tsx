@@ -6,7 +6,7 @@ import HomeLayout from "@/pages/home/home-layout.tsx";
 import LoginIndex from "@/pages/auth/login/login-index.tsx";
 import ErrorPage from "@/pages/error/500/error.tsx";
 import NotFoundPage from "@/pages/error/404/not-found.tsx";
-
+import RegisterIndex from "@/pages/auth/register/register-index.tsx";
 
 
 /**
@@ -49,16 +49,20 @@ const Router = createBrowserRouter([
         Component: LoginIndex,
     },
     {
+        path: "/register",
+        Component: RegisterIndex,
+    },
+    {
         path: "/error",
         children: [
-             {
-                 path: "404",
-                 Component: NotFoundPage,
-             },
-             {
-                 path: "500",
-                  Component: ErrorPage,
-             }
+            {
+                path: "404",
+                Component: NotFoundPage,
+            },
+            {
+                path: "500",
+                Component: ErrorPage,
+            }
         ]
     },
     {

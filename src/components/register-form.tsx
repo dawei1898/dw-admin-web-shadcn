@@ -19,7 +19,7 @@ import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {Link} from "react-router";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 
-export function LoginForm({
+export function RegisterForm({
                               className,
                               ...props
                           }: React.ComponentProps<"div">) {
@@ -43,21 +43,22 @@ export function LoginForm({
                 <CardContent>
                     <form>
                         <FieldGroup>
-                            <Field>
-                                {/*<FieldLabel htmlFor="username">账号</FieldLabel>*/}
+                            <Field orientation="horizontal">
+                                <FieldLabel htmlFor='username'>账号</FieldLabel>
                                 <InputGroup>
                                     <InputGroupAddon>
                                         <User/>
                                     </InputGroupAddon>
                                     <InputGroupInput
                                         id="username"
-                                        placeholder="账号：admin"
+                                        placeholder="请输入账号...."
                                         required
                                     />
                                 </InputGroup>
                             </Field>
+
                             <Field>
-                                {/*<FieldLabel htmlFor="password">密码</FieldLabel>*/}
+                                <FieldLabel htmlFor='password'>密码</FieldLabel>
                                 <InputGroup>
                                     <InputGroupAddon>
                                         <Lock/>
@@ -65,36 +66,34 @@ export function LoginForm({
                                     <InputGroupInput
                                         id="password"
                                         type="password"
-                                        placeholder='密码：123456'
+                                        placeholder='请输入密码...'
                                         required
                                     />
                                 </InputGroup>
                             </Field>
 
-                            <Field orientation='horizontal'>
-                                {/* 记住我 */}
-                                <Checkbox id="remember"/>
-                                <FieldDescription>
-                                    记住我
-                                </FieldDescription>
-
-                                <div className="flex items-center  ml-auto ">
-                                    <a
-                                        href="#"
-                                        className="inline-block text-sm underline-offset-4 hover:underline"
-                                    >
-                                        忘记密码?
-                                    </a>
-                                </div>
+                            <Field>
+                                <FieldLabel htmlFor='confirmPassword'>确认密码</FieldLabel>
+                                <InputGroup>
+                                    <InputGroupAddon>
+                                        <Lock/>
+                                    </InputGroupAddon>
+                                    <InputGroupInput
+                                        id="confirmPassword"
+                                        type="password"
+                                        placeholder='请确认密码...'
+                                        required
+                                    />
+                                </InputGroup>
                             </Field>
 
                             <Field>
-                                <Button type="submit">登录</Button>
+                                <Button type="submit">注册</Button>
                                 <FieldDescription className="text-center">
-                                    还没有账号?
-                                    <Link to={'/register'}>
+                                    已有账号?
+                                    <Link to={'/login'}>
                                         <span className='text-blue-500 underline'>
-                                            注册
+                                            登录
                                         </span>
                                     </Link>
                                 </FieldDescription>
