@@ -1,24 +1,27 @@
+import React from "react";
 import {createBrowserRouter, useRouteError} from "react-router";
 import App from "../App.tsx";
 import TestIndex from "@/pages/test/test.tsx";
 import HomeLayout from "@/pages/home/home-layout.tsx";
 import LoginIndex from "@/pages/auth/login/login-index.tsx";
+import ErrorPage from "@/pages/error/500/error.tsx";
+import NotFoundPage from "@/pages/error/404/not-found.tsx";
 
 
 
 /**
  * 根据错误类型跳转到对应的页面
  */
-/*function GeneralErrorBoundary() {
+function GeneralErrorBoundary() {
     const error: any = useRouteError();
     if (error.status === 403) {
-        return <NotAuthorizedPage/>;
+        //return <NotAuthorizedPage/>;
     } else if (error.status === 404) {
         return <NotFoundPage/>;
     } else {
         return <ErrorPage/>;
     }
-}*/
+}
 
 /**
  * 页面路由
@@ -27,7 +30,7 @@ const Router = createBrowserRouter([
     {
         path: "/",
         Component: HomeLayout,
-        //errorElement: <GeneralErrorBoundary/>,
+        errorElement: <GeneralErrorBoundary/>,
         children: [
             /*{
                 index: true,
@@ -44,6 +47,19 @@ const Router = createBrowserRouter([
     {
         path: "/login",
         Component: LoginIndex,
+    },
+    {
+        path: "/error",
+        children: [
+             {
+                 path: "404",
+                 Component: NotFoundPage,
+             },
+             {
+                 path: "500",
+                  Component: ErrorPage,
+             }
+        ]
     },
     {
         path: "/test",
