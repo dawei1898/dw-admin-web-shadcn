@@ -27,40 +27,25 @@ const UserSettings = (
     return (<>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                {side === 'sidebar' ?
-                    (<SidebarMenuButton
-                        className={'w-30'}
-                    >
-                        <Avatar className='h-7 w-7'>
-                            {<AvatarImage
-                                    src={user?.avatarUrl}
-                                    alt={user?.username}
-                                />}
-                            <AvatarFallback className='bg-primary text-background'>
-                                <User size={20}/>
-                            </AvatarFallback>
-                        </Avatar>
-                        <span>{user?.username}</span>
-                    </SidebarMenuButton>)
-                    : (
-                        <div>
-                            <Avatar className='h-6 w-6 cursor-pointer'>
-                                {<AvatarImage
-                                    src="https://github.com/shadcn.png"
-                                    alt="@shadcn"
-                                />}
-                                <AvatarFallback className='bg-primary text-background'>
-                                    <User size={20}/>
-                                </AvatarFallback>
-                            </Avatar>
-                        </div>
-                    )
-                }
+                <SidebarMenuButton
+                    className={'w-30'}
+                >
+                    <Avatar className='h-7 w-7'>
+                        {<AvatarImage
+                            src={user?.avatarUrl}
+                            alt={user?.username}
+                        />}
+                        <AvatarFallback className='bg-primary text-background'>
+                            <User size={20}/>
+                        </AvatarFallback>
+                    </Avatar>
+                    <span>{user?.username}</span>
+                </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 className="w-(--radix-dropdown-menu-trigger-width) min-w-40 rounded-lg"
                 side="bottom"
-                align={side === 'sidebar' ? "start" : "end"}
+                align="start"
             >
                 <DropdownMenuGroup>
                     <DropdownMenuItem
@@ -72,9 +57,9 @@ const UserSettings = (
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator/>
                 <DropdownMenuItem
-                    onClick={async () => {
-                        //await logout()
-                    }}
+                    /*onClick={async () => {
+                        await logout()
+                    }}*/
                 >
                     <LogOut/>
                     <span>退出登录</span>
