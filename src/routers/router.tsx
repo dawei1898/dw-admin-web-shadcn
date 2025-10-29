@@ -10,6 +10,7 @@ import RegisterIndex from "@/pages/auth/register/register-index.tsx";
 import WorkbenchIndex from "@/pages/dashboard/workbench/workbench-index.tsx";
 import AnalysisIndex from "@/pages/dashboard/analysis/analysis-index.tsx";
 import NotAuthorizedPage from "@/pages/error/403/not-authorized.tsx";
+import UserManageIndex from "@/pages/system/user/user-manage-index.tsx";
 
 
 /**
@@ -55,7 +56,18 @@ const Router = createBrowserRouter([
                     },
                 ]
             },
+            {
+                path: "system",
+                handle: {breadcrumb: "系统管理"},
+                children: [
+                    {
+                        path: "user",
+                        Component: UserManageIndex,
+                        handle: {breadcrumb: "用户管理"},
+                    },
 
+                ]
+            },
 
         ]
     },
