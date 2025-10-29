@@ -1,5 +1,5 @@
 import React from 'react';
-import {LoginForm} from "@/components/login-form.tsx";
+import {LoginForm} from "@/components/auth/login-form.tsx";
 
 /**
  * 登录页
