@@ -9,6 +9,7 @@ import NotFoundPage from "@/pages/error/404/not-found.tsx";
 import RegisterIndex from "@/pages/auth/register/register-index.tsx";
 import WorkbenchIndex from "@/pages/dashboard/workbench/workbench-index.tsx";
 import AnalysisIndex from "@/pages/dashboard/analysis/analysis-index.tsx";
+import NotAuthorizedPage from "@/pages/error/403/not-authorized.tsx";
 
 
 /**
@@ -73,6 +74,10 @@ const Router = createBrowserRouter([
     {
         path: "/error",
         children: [
+            {
+                path: "403",
+                Component: NotAuthorizedPage,
+            },
             {
                 path: "404",
                 Component: NotFoundPage,

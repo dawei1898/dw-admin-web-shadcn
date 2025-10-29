@@ -3,8 +3,10 @@ import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
-    SidebarHeader, SidebarMenu, SidebarMenuItem,
-    SidebarRail, useSidebar,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuItem,
+    SidebarRail,
 } from "@/components/ui/sidebar"
 import Logo from "@/components/sidebar/logo.tsx";
 import NavFooter from "@/components/sidebar/nav-footer.tsx";
@@ -18,7 +20,10 @@ import NavMenus from "@/components/sidebar/nav-menus.tsx";
 export function AdminSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 
     return (
-        <Sidebar collapsible="icon" {...props}  >
+        <Sidebar
+            variant='sidebar' // 侧边栏形状
+            collapsible="icon"
+            {...props}  >
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
