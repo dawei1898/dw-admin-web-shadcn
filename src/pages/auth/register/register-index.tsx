@@ -1,6 +1,6 @@
 import React from 'react';
-import {LoginForm} from "@/components/login-form.tsx";
-import {RegisterForm} from "@/components/register-form.tsx";
+import {LoginForm} from "@/components/auth/login-form.tsx";
+import {RegisterForm} from "@/components/auth/register-form.tsx";
 
 /**
  * 注册页

@@ -1,18 +1,18 @@
-import {cn} from "@/lib/utils"
-import {Button} from "@/components/ui/button"
+import {cn} from "@/lib/utils.ts"
+import {Button} from "@/components/ui/button.tsx"
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card.tsx"
 import {
     Field,
     FieldDescription,
     FieldGroup,
     FieldLabel,
-} from "@/components/ui/field"
+} from "@/components/ui/field.tsx"
 import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group.tsx";
 import {Lock, User} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
@@ -43,7 +43,7 @@ export function RegisterForm({
                 <CardContent>
                     <form>
                         <FieldGroup>
-                            <Field orientation="horizontal">
+                            <Field>
                                 <FieldLabel htmlFor='username'>账号</FieldLabel>
                                 <InputGroup>
                                     <InputGroupAddon>
@@ -88,9 +88,11 @@ export function RegisterForm({
                             </Field>
 
                             <Field>
-                                <Button type="submit">注册</Button>
+                                <Button type="submit" className='cursor-pointer'>
+                                    注册
+                                </Button>
                                 <FieldDescription className="text-center">
-                                    已有账号?
+                                    已有账号？
                                     <Link to={'/login'}>
                                         <span className='text-blue-500 underline'>
                                             登录
