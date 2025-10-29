@@ -15,7 +15,7 @@ const Logo = () => {
             <NavLink to='/'>
                 <div className='flex justify-center items-center gap-3'>
                     <Avatar>
-                        <AvatarImage src='logo.svg' alt="DW"/>
+                        <AvatarImage src='/logo.svg' alt="DW"/>
                         <AvatarFallback>DW</AvatarFallback>
                     </Avatar>
                     {open && <span className='text-blue-500 text-xl font-bold '>DW Admin</span>}

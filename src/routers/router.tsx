@@ -7,6 +7,8 @@ import LoginIndex from "@/pages/auth/login/login-index.tsx";
 import ErrorPage from "@/pages/error/500/error.tsx";
 import NotFoundPage from "@/pages/error/404/not-found.tsx";
 import RegisterIndex from "@/pages/auth/register/register-index.tsx";
+import WorkbenchIndex from "@/pages/dashboard/workbench/workbench-index.tsx";
+import AnalysisIndex from "@/pages/dashboard/analysis/analysis-index.tsx";
 
 
 /**
@@ -36,6 +38,22 @@ const Router = createBrowserRouter([
                 index: true,
                 Component: HomeIndex,
             },*/
+            {
+                path: "dashboard",
+                handle: {breadcrumb: "控制台"},
+                children: [
+                    {
+                        path: "workbench",
+                        Component: WorkbenchIndex,
+                        handle: {breadcrumb: "工作台"},
+                    },
+                    {
+                        path: "analysis",
+                        Component: AnalysisIndex,
+                        handle: {breadcrumb: "分析页"},
+                    },
+                ]
+            },
 
 
         ]
