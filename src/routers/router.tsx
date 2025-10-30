@@ -19,7 +19,7 @@ import UserManageIndex from "@/pages/system/user/user-manage-index.tsx";
 function GeneralErrorBoundary() {
     const error: any = useRouteError();
     if (error.status === 403) {
-        //return <NotAuthorizedPage/>;
+        return <NotAuthorizedPage/>;
     } else if (error.status === 404) {
         return <NotFoundPage/>;
     } else {
