@@ -51,7 +51,7 @@ react-icons 图标 https://react-icons.github.io/react-icons
 npm install react-icons --save
 ```
 
-react-table
+react-table  https://tanstack.com/table/latest
 ```shell
 npm install @tanstack/react-table
 ```
