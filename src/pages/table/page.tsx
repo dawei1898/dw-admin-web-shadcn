@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import type {Payment} from "@/pages/table/test-data.tsx";
 import DataTable from "@/pages/table/data-table.tsx";
 import {columns} from "@/pages/table/columns.tsx";
@@ -99,6 +99,7 @@ const data: Payment[] = [
 
 const TableDemoPage = () => {
 
+    
 
     return (
         <div className="container mx-auto py-10">

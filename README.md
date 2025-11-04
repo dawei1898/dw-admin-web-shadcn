@@ -43,7 +43,7 @@ npx shadcn@latest init
 
 添加组件
 ```shell
-npx shadcn@latest add tabs
+npx shadcn@latest add pagination
 ```
 
 react-icons 图标 https://react-icons.github.io/react-icons

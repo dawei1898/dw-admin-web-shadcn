@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {ArrowUpDown, MoreHorizontal} from "lucide-react";
+import {Checkbox} from "@/components/ui/checkbox.tsx";
+import DataTableColumnHeader from "@/pages/table/data-table-column-header.tsx";
 
 export type Payment = {
     id: string,
@@ -18,15 +20,36 @@ export type Payment = {
 
 export const columns: ColumnDef<Payment>[] = [
     {
+        id: "select",
+        header: ({table}) => (
+            <Checkbox
+                checked={table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && "indeterminate")}
+                onCheckedChange={
+                    (value) => table.toggleAllPageRowsSelected(!!value)
+                }
+            />
+        ),
+        cell: ({row}) => (
+            <Checkbox
+                checked={row.getIsSelected()}
+                onCheckedChange={(value) => row.toggleSelected(!!value)}
+            />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
         accessorKey: "email",
         header: ({column}) => (
-            <Button
+            <DataTableColumnHeader column={column} title='Email'/>
+            /*<Button
                 variant='ghost'
                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
                 Email
                 <ArrowUpDown className='ml-2 h-4 w-4'/>
-            </Button>
+            </Button>*/
         ),
     },
     {
