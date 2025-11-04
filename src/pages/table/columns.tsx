@@ -6,9 +6,11 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {ArrowUpDown, MoreHorizontal} from "lucide-react";
+import {ArrowUpDown, CheckCircle, MinusCircle, MoreHorizontal, RefreshCw, XCircle} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import DataTableColumnHeader from "@/pages/table/data-table-column-header.tsx";
+import {Badge} from "@/components/ui/badge.tsx";
+import {Tag} from "@/components/tag.tsx";
 
 export type Payment = {
     id: string,
@@ -55,6 +57,35 @@ export const columns: ColumnDef<Payment>[] = [
     {
         accessorKey: "status",
         header: "Status",
+        cell: ({row}) => {
+            const status = row.getValue("status") as Payment["status"];
+            switch (status) {
+                case "pending":
+                     return (
+                         <Tag icon={<MinusCircle className="w-3.5 h-3.5" />} color="default">
+                             {status}
+                         </Tag>
+                     );
+                case "processing":
+                    return (
+                        <Tag icon={<RefreshCw className="w-3.5 h-3.5 animate-spin" />} color="processing">
+                            {status}
+                        </Tag>
+                    )
+                case "success":
+                    return (
+                        <Tag icon={<CheckCircle className="w-3.5 h-3.5" />} color="success">
+                            {status}
+                        </Tag>
+                    )
+                case "failed":
+                    return (
+                        <Tag icon={<XCircle className="w-3.5 h-3.5" />} color="error">
+                            {status}
+                        </Tag>
+                    )
+            }
+        },
     },
     {
         accessorKey: "amount",

@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import type {Payment} from "@/pages/table/test-data.tsx";
 import DataTable from "@/pages/table/data-table.tsx";
 import {columns} from "@/pages/table/columns.tsx";
+import TagDemo from "@/components/TagDemo.tsx";
 
 
 const data: Payment[] = [
@@ -14,7 +15,7 @@ const data: Payment[] = [
     {
         id: "3u1reuv4",
         amount: 242,
-        status: "success",
+        status: "pending",
         email: "Abe45@example.com",
     },
     {
@@ -103,6 +104,7 @@ const TableDemoPage = () => {
 
     return (
         <div className="container mx-auto py-10">
+            {/*<TagDemo/>*/}
             <DataTable columns={columns} data={data}/>
         </div>
     );
