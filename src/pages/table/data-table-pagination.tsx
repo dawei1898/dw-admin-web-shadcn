@@ -90,7 +90,7 @@ const DataTablePagination = <TData,>(
                         <SelectTrigger>
                             <SelectValue placeholder={table.getState().pagination.pageSize}/>
                         </SelectTrigger>
-                        <SelectContent side='top'>
+                        <SelectContent side='top' align='end'>
                             {[5, 10, 20, 50].map(pageSize => (
                                 <SelectItem key={pageSize} value={`${pageSize}`}>
                                     {pageSize} 条/页

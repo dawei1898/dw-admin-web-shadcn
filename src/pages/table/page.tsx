@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import type {Payment} from "@/pages/table/test-data.tsx";
 import DataTable from "@/pages/table/data-table.tsx";
 import {columns} from "@/pages/table/columns.tsx";
-import TagDemo from "@/components/TagDemo.tsx";
+
 
 
 const data: Payment[] = [
@@ -21,7 +21,7 @@ const data: Payment[] = [
     {
         id: "derv1ws0",
         amount: 837,
-        status: "processing",
+        status: "success",
         email: "Monserrat44@example.com",
     },
     {
@@ -51,7 +51,7 @@ const data: Payment[] = [
     {
         id: "3derv1ws0",
         amount: 837,
-        status: "processing",
+        status: "pending",
         email: "Monserrat44@example.com",
     },
     {
