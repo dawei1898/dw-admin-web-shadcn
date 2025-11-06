@@ -48,9 +48,6 @@ const DataTableColumnHeader = <TData, TValue>(
                     <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
                         <ArrowDown/> Desc
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
-                        <EyeOff/> Hide
-                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

@@ -1,4 +1,4 @@
-import type {ColumnDef} from "@tanstack/react-table";
+import type {ColumnDef, Table} from "@tanstack/react-table";
 import {
     DropdownMenu,
     DropdownMenuContent, DropdownMenuItem,
@@ -16,6 +16,7 @@ import DataTableColumnHeader from "@/pages/table/data-table-column-header.tsx";
 import {Tag} from "@/components/tag.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
 import {Label} from "@radix-ui/react-label";
+import FilterDropdownMenu from "@/pages/table/filter-dropdown-menu.tsx";
 
 export type Payment = {
     id: string,
@@ -58,10 +59,13 @@ export const columns: ColumnDef<Payment>[] = [
                 <ArrowUpDown className='ml-2 h-4 w-4'/>
             </Button>*/
         ),
+        /*sortingFn: (a, b) => {
+            return 0 // 去除过滤
+        },*/
     },
     {
         accessorKey: "status",
-        header: () => (
+        header: ({table}) => (
             <div className='flex gap-2'>
                 <Separator
                     orientation="vertical"
@@ -69,41 +73,24 @@ export const columns: ColumnDef<Payment>[] = [
                 />
                 Status
                 <div className='ml-auto mr-6'>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Funnel/>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end'>
-                            <DropdownMenuItem>
-                                <Checkbox id='pending' value='pending'/>
-                                <Label htmlFor='pending'>pending</Label>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Checkbox id='processing' value='processing'/>
-                                <Label htmlFor='processing'>processing</Label>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Checkbox id='success' value='success'/>
-                                <Label htmlFor='success'>success</Label>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Checkbox id='failed' value='failed'/>
-                                <Label htmlFor='failed'>failed</Label>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator/>
-                            <DropdownMenuItem>
-                                <Button variant={"ghost"} size={"sm"}>
-                                    重置
-                                </Button>
-                                <Button variant={"default"} size={"sm"}>
-                                    确定
-                                </Button>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <FilterDropdownMenu
+                        table={table}
+                        accessorKey="status"
+                        items={[
+                            {value: "pending", label: "pending"},
+                            {value: "processing", label: "processing"},
+                            {value: "success", label: "success"},
+                            {value: "failed", label: "failed"},
+                        ]}/>
                 </div>
             </div>
         ),
+        filterFn: (row, columnId, filterValue) => {
+            // filterValue 是字符串数组
+            if (!filterValue || filterValue.length === 0) return true;
+            // OR 关系：只要匹配任何一个值就返回 true
+            return filterValue.includes(row.getValue(columnId));
+        },
         cell: ({row}) => {
             const status = row.getValue("status") as Payment["status"];
             switch (status) {

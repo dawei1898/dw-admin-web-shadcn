@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     type ColumnDef, type ColumnFiltersState,
     flexRender,
@@ -47,6 +47,8 @@ const DataTable = <TData, TValue>(
     // 选中的行
     const [rowSelection, setRowSelection] = useState({})
 
+
+
     const table = useReactTable({
         columns,
         data,
@@ -66,6 +68,14 @@ const DataTable = <TData, TValue>(
         }
 
     });
+
+    useEffect(() => {
+        console.log('sorting:', sorting)
+        console.log('columnFilters:', columnFilters)
+        const pagination = table.getState().pagination;
+        console.log('pagination:', pagination)
+    }, [sorting,columnFilters,table.getState().pagination]);
+
 
     return (
         <div className='px-4'>
