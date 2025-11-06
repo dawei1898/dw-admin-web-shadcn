@@ -21,6 +21,7 @@ import {
 import {ChevronLeft, ChevronRight} from "lucide-react";
 import DataTablePagination from "@/pages/table/data-table-pagination.tsx";
 import DataTableViewOptions from "@/pages/table/data-table-view-options.tsx";
+import {statusOptions} from "@/pages/table/columns.tsx";
 
 
 interface DataTableProps<TData, TValue> {
@@ -78,19 +79,53 @@ const DataTable = <TData, TValue>(
 
 
     return (
-        <div className='px-4'>
-            <div className='flex items-center py-4'>
-                <Label>Email: </Label>
-                <Input
-                    className='max-w-sm ml-1'
-                    placeholder='Filter emails ...'
-                    value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) => {
-                        table.getColumn("email")?.setFilterValue(event.target.value)
-                    }}
-                />
+        <div className='flex flex-col gap-6 px-4'>
+            <div className='flex items-center gap-6 p-4 rounded-md border border-secondary'>
+                <div className='flex gap-2'>
+                    <Label>Email: </Label>
+                    <Input
+                        className='max-w-50 ml-1'
+                        placeholder='Filter emails ...'
+                        value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+                        onChange={(event) => {
+                            table.getColumn("email")?.setFilterValue(event.target.value)
+                        }}
+                    />
+                </div>
 
-                <DataTableViewOptions table={table} className='ml-auto'/>
+                <div className='flex gap-2'>
+                    <Label>Status: </Label>
+                    <Select
+                        value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
+                        onValueChange={(value) => table.getColumn("status")?.setFilterValue(value)}
+                    >
+                        <SelectTrigger className='w-32' >
+                            <SelectValue placeholder='Select a status'/>
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem key='all' value={'all'}>
+                                <span>All</span>
+                            </SelectItem>
+                            {statusOptions.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                    <span className='capitalize'>{option.label}</span>
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className='flex gap-2 ml-auto'>
+                    <Button size={"sm"} className='cursor-pointer' >
+                        Search
+                    </Button>
+
+                    <Button variant="outline" size={"sm"} className='cursor-pointer' >
+                        Reset
+                    </Button>
+
+                    <DataTableViewOptions table={table} label='Column' className='cursor-pointer' />
+                </div>
             </div>
 
             <div className="overflow-hidden rounded-md border">

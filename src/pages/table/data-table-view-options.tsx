@@ -12,11 +12,12 @@ import {cn} from "@/lib/utils.ts";
 
 interface DataTableViewOptionsProps<TData> {
     table: Table<TData>,
+    label?: string,
     className?: string,
 }
 
 const DataTableViewOptions = <TData,>(
-    {table, className}: DataTableViewOptionsProps<TData>
+    {table, label, className}: DataTableViewOptionsProps<TData>
 ) => {
 
 
@@ -30,7 +31,7 @@ const DataTableViewOptions = <TData,>(
                         className='flex ml-auto'
                     >
                         <Settings2/>
-                        列
+                        {label}
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>

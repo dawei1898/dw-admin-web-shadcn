@@ -25,6 +25,13 @@ export type Payment = {
     email: string,
 }
 
+export const statusOptions = [
+    {value: "pending", label: "pending"},
+    {value: "processing", label: "processing"},
+    {value: "success", label: "success"},
+    {value: "failed", label: "failed"},
+]
+
 
 export const columns: ColumnDef<Payment>[] = [
     {
@@ -76,18 +83,14 @@ export const columns: ColumnDef<Payment>[] = [
                     <FilterDropdownMenu
                         table={table}
                         accessorKey="status"
-                        items={[
-                            {value: "pending", label: "pending"},
-                            {value: "processing", label: "processing"},
-                            {value: "success", label: "success"},
-                            {value: "failed", label: "failed"},
-                        ]}/>
+                        items={statusOptions}/>
                 </div>
             </div>
         ),
         filterFn: (row, columnId, filterValue) => {
             // filterValue 是字符串数组
             if (!filterValue || filterValue.length === 0) return true;
+            if (filterValue.includes("all")) return true;
             // OR 关系：只要匹配任何一个值就返回 true
             return filterValue.includes(row.getValue(columnId));
         },
