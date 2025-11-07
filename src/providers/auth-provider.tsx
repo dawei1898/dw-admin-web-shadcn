@@ -2,7 +2,7 @@ import {type LoginParam, type RegisterParam, type User} from "@/types/auth.ts";
 import {createContext, useContext, useState} from "react";
 import {loginAPI, logoutAPI, registerAPI} from "@/apis/auth-api.ts";
 import {getLoginUserAPI} from "@/apis/user-api.ts";
-import {useUserStore} from "@/stores/userStore.ts";
+import {useUserStore} from "@/stores/user-store.ts";
 
 
 interface AuthContextType {

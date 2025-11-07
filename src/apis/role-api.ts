@@ -1,4 +1,4 @@
-import {axioser} from "@/utils/httpUtil.ts";
+import {axioser} from "@/utils/http-util.ts";
 import type {ApiResponse, PageResult} from "@/types";
 import type {RoleParam, RoleSearchParam, RoleVO, UserRoleParam} from "@/types/roles.ts";
 
