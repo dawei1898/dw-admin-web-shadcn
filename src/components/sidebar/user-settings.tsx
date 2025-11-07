@@ -9,6 +9,8 @@ import {
 import {SidebarMenuButton, useSidebar} from "@/components/ui/sidebar";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {LogOut, Settings, User} from "lucide-react";
+import {useAuth} from "@/providers/auth-provider.tsx";
+import {useNavigate} from "react-router";
 
 
 /**
@@ -19,53 +21,57 @@ import {LogOut, Settings, User} from "lucide-react";
 const UserSettings = (
     {user, side = 'sidebar'}: { user?: any, side?: 'sidebar' | 'header' }
 ) => {
+
+    const {logout} = useAuth();
+    const navigate = useNavigate();
     const {open, isMobile} = useSidebar();
-
-
     const [settingOpen, setSettingOpen] = useState(false)
 
     return (<>
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                    className={'w-30'}
-                >
-                    <Avatar className='h-7 w-7'>
-                        {<AvatarImage
-                            src={user?.avatarUrl}
-                            alt={user?.username}
-                        />}
-                        <AvatarFallback className='bg-primary text-background'>
-                            <User size={20}/>
-                        </AvatarFallback>
-                    </Avatar>
-                    <span>{user?.username}</span>
-                </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-40 rounded-lg"
-                side="bottom"
-                align="start"
-            >
-                <DropdownMenuGroup>
-                    <DropdownMenuItem
-                        onClick={() => { setSettingOpen(true)}}
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton
+                        className={'w-30'}
                     >
-                        <Settings/>
-                        设置
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator/>
-                <DropdownMenuItem
-                    /*onClick={async () => {
-                        await logout()
-                    }}*/
+                        <Avatar className='h-7 w-7'>
+                            {<AvatarImage
+                                src={user?.avatarUrl}
+                                alt={user?.username}
+                            />}
+                            <AvatarFallback className='bg-primary text-background'>
+                                <User size={20}/>
+                            </AvatarFallback>
+                        </Avatar>
+                        <span>{user?.username}</span>
+                    </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                    className="w-(--radix-dropdown-menu-trigger-width) min-w-40 rounded-lg"
+                    side="bottom"
+                    align="start"
                 >
-                    <LogOut/>
-                    <span>退出登录</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem
+                            onClick={() => {
+                                setSettingOpen(true)
+                            }}
+                        >
+                            <Settings/>
+                            设置
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator/>
+                    <DropdownMenuItem
+                        onClick={async () => {
+                            await logout();
+                            navigate('/login')
+                        }}
+                    >
+                        <LogOut/>
+                        <span>退出登录</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </>
     );
 };
