@@ -10,19 +10,82 @@ import {
 import {
     Field,
     FieldDescription,
+    FieldError,
     FieldGroup,
-    FieldLabel,
 } from "@/components/ui/field.tsx"
-import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group.tsx";
+import {
+    InputGroup, InputGroupAddon, InputGroupInput
+} from "@/components/ui/input-group.tsx";
 import {Lock, User} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
-import {Link} from "react-router";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
+import {Link, useNavigate} from "react-router";
+import {
+    Avatar, AvatarFallback, AvatarImage
+} from "@/components/ui/avatar.tsx";
+import {z} from "zod";
+import {useForm} from "@tanstack/react-form";
+import {toast} from "sonner";
+import {useState} from "react";
+import {useAuth} from "@/providers/auth-provider.tsx";
+import type {LoginParam} from "@/types/auth.ts";
 
-export function LoginForm({
-                              className,
-                              ...props
-                          }: React.ComponentProps<"div">) {
+
+/**
+ * 登录组件
+ */
+export function LoginForm(
+    {className, ...props}: React.ComponentProps<"div">
+) {
+
+    const navigate = useNavigate();
+    const {login} = useAuth();
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const formSchema = z.object({
+        username: z.string()
+            .min(1, '用户名不能为空'),
+        password: z.string()
+            .min(6, '密码长度在 6-15 之间')
+            .max(15, '密码长度在 6-15 之间'),
+    });
+
+    const form = useForm({
+        defaultValues: {
+            username: "",
+            password: "",
+        },
+        validators: {
+            onSubmit: formSchema,
+        },
+        onSubmit: async ({value}) => {
+            console.log('提交登录 value: ', JSON.stringify(value))
+            await handleLogin({
+                username: value.username,
+                password: value.password,
+            })
+        }
+    });
+
+    /**
+     * 处理登录操作
+     */
+    const handleLogin = async (param: LoginParam) => {
+        try {
+            setLoading(true)
+
+            await login(param)
+            // 跳到首页
+            console.log('跳到首页')
+            navigate('/')
+        } catch (e) {
+            console.log('登录失败：', e)
+            if (e instanceof Error) {
+                toast.error(e.message)
+            }
+        } finally {
+            setLoading(false)
+        }
+    }
 
 
     return (
@@ -41,35 +104,71 @@ export function LoginForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form>
+                    <form
+                        id='login-form'
+                        onSubmit={(e) => {
+                            e.preventDefault()
+                            form.handleSubmit()
+                        }}
+                    >
                         <FieldGroup>
-                            <Field>
-                                {/*<FieldLabel htmlFor="username">账号</FieldLabel>*/}
-                                <InputGroup>
-                                    <InputGroupAddon>
-                                        <User/>
-                                    </InputGroupAddon>
-                                    <InputGroupInput
-                                        id="username"
-                                        placeholder="账号：admin"
-                                        required
-                                    />
-                                </InputGroup>
-                            </Field>
-                            <Field>
-                                {/*<FieldLabel htmlFor="password">密码</FieldLabel>*/}
-                                <InputGroup>
-                                    <InputGroupAddon>
-                                        <Lock/>
-                                    </InputGroupAddon>
-                                    <InputGroupInput
-                                        id="password"
-                                        type="password"
-                                        placeholder='密码：123456'
-                                        required
-                                    />
-                                </InputGroup>
-                            </Field>
+                            <form.Field
+                                name="username"
+                                children={(field) => {
+                                    const isInvalid = field.state.meta.isTouched
+                                        && !field.state.meta.isValid
+                                    return (
+                                        <Field>
+                                            <InputGroup>
+                                                <InputGroupAddon>
+                                                    <User/>
+                                                </InputGroupAddon>
+                                                <InputGroupInput
+                                                    id={field.name}
+                                                    name={field.name}
+                                                    value={field.state.value}
+                                                    onChange={(e) =>
+                                                        field.handleChange(e.target.value)
+                                                    }
+                                                    aria-invalid={isInvalid}
+                                                    placeholder="账号：admin"
+                                                />
+                                            </InputGroup>
+                                            {isInvalid &&
+                                                <FieldError errors={field.state.meta.errors}/>}
+                                        </Field>
+                                    )
+                                }}
+                            />
+
+                            <form.Field
+                                name="password"
+                                children={(field) => {
+                                    const isInvalid = field.state.meta.isTouched
+                                        && !field.state.meta.isValid
+                                    return (
+                                        <Field>
+                                            <InputGroup>
+                                                <InputGroupAddon>
+                                                    <Lock/>
+                                                </InputGroupAddon>
+                                                <InputGroupInput
+                                                    id={field.name}
+                                                    name={field.name}
+                                                    value={field.state.value}
+                                                    onChange={(e) =>
+                                                        field.handleChange(e.target.value)
+                                                    }
+                                                    aria-invalid={isInvalid}
+                                                    placeholder='密码：123456'
+                                                />
+                                            </InputGroup>
+                                            {isInvalid &&
+                                                <FieldError errors={field.state.meta.errors}/>}
+                                        </Field>
+                                    )
+                                }}
+                            />
 
                             <Field orientation='horizontal'>
                                 {/* 记住我 */}
@@ -89,7 +188,11 @@ export function LoginForm({
                             </Field>
 
                             <Field>
-                                <Button type="submit" className='cursor-pointer'>
+                                <Button
+                                    className='cursor-pointer'
+                                    type="submit"
+                                    disabled={form.state.isSubmitting}
+                                >
                                     登录
                                 </Button>
                                 <FieldDescription className="text-center">
