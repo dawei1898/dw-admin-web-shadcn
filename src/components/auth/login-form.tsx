@@ -41,7 +41,7 @@ export function LoginForm(
     const {login} = useAuth();
     const [loading, setLoading] = useState<boolean>(false);
 
-    const formSchema = z.object({
+    const loginSchema = z.object({
         username: z.string()
             .min(1, '用户名不能为空'),
         password: z.string()
@@ -55,7 +55,7 @@ export function LoginForm(
             password: "",
         },
         validators: {
-            onSubmit: formSchema,
+            onSubmit: loginSchema,
         },
         onSubmit: async ({value}) => {
             console.log('提交登录 value: ', JSON.stringify(value))
