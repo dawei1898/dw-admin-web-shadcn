@@ -6,7 +6,9 @@ import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {
-    RotateCw, Search,
+    Delete,
+    Plus,
+    RotateCw, Search, Trash2,
 } from "lucide-react";
 import {
     Table, TableBody, TableCell,
@@ -415,6 +417,7 @@ const RoleManageIndex = () => {
         console.log('columnFilters:', columnFilters)
         const pagination = table.getState().pagination;
         console.log('pagination:', pagination)
+        console.log('rowSelection:', rowSelection)
 
         let pageNum: number = 1;
         let pageSize: number = 10;
@@ -482,7 +485,7 @@ const RoleManageIndex = () => {
                 <div className='flex items-center gap-6 p-4 rounded-md border border-secondary'>
                     <div className='flex gap-6'>
                         <div className='flex'>
-                            <Label>角色码：</Label>
+                            <Label className='font-normal'> 角色码：</Label>
                             <Input
                                 className='max-w-40 ml-1'
                                 placeholder=''
@@ -493,7 +496,7 @@ const RoleManageIndex = () => {
                             />
                         </div>
                         <div className='flex'>
-                            <Label>角色名称：</Label>
+                            <Label className='font-normal'> 角色名称：</Label>
                             <Input
                                 className='max-w-40 ml-1'
                                 placeholder=''
@@ -504,7 +507,7 @@ const RoleManageIndex = () => {
                             />
                         </div>
                         <div className='flex'>
-                            <Label>状态：</Label>
+                            <Label className='font-normal'> 状态：</Label>
                             <Select
                                 value={table.getColumn("status")?.getFilterValue() as string}
                                 onValueChange={(value) => {
@@ -543,13 +546,30 @@ const RoleManageIndex = () => {
                             <RotateCw/>
                             重置
                         </Button>
-
-                        <ColumnViewOptions<RoleVO>
-                            className='cursor-pointer'
-                            label='列'
-                            table={table}
-                        />
                     </div>
+                </div>
+
+                {/* 添加删除按钮 */}
+                <div className='flex justify-end items-center gap-4'>
+                    <Button size='sm' className='cursor-pointer'>
+                        <Plus/>
+                        添加
+                    </Button>
+                    <Button
+                        className='cursor-pointer'
+                        variant='destructive'
+                        size='sm'
+                        disabled={table.getSelectedRowModel().rows.length < 1}
+                    >
+                        <Trash2 />
+                        删除
+                    </Button>
+
+                    <ColumnViewOptions<RoleVO>
+                        className='cursor-pointer'
+                        label='列'
+                        table={table}
+                    />
                 </div>
 
                 {/* 数据列表 */}

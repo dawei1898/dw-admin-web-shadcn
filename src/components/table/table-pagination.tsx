@@ -54,7 +54,7 @@ const TablePagination = <TData, >(
                             table.setPageSize(Number(value))
                         }}
                     >
-                        <SelectTrigger>
+                        <SelectTrigger size='sm'>
                             <SelectValue placeholder={table.getState().pagination.pageSize}/>
                         </SelectTrigger>
                         <SelectContent side='top' align='center'>
@@ -83,6 +83,7 @@ const TablePagination = <TData, >(
                         return (
                             <Button
                                 key={pageIndex}
+                                size='sm'
                                 variant={active ? 'outline' : 'ghost'}
                                 onClick={() => table.setPageIndex(pageIndex)}
                             >
@@ -105,7 +106,7 @@ const TablePagination = <TData, >(
                 {showQuickJumper &&
                     <div className='flex justify-center items-center gap-2'>
                         <Input
-                            className='w-15'
+                            className='h-8 w-15'
                             type='number'
                             value={quickJumper}
                             onChange={(e) => {
@@ -119,6 +120,7 @@ const TablePagination = <TData, >(
                         />
                         <Button
                             className='cursor-pointer'
+                            size='sm'
                             onClick={() => {
                                 if (quickJumper) {
                                     table.setPageIndex(quickJumper - 1)

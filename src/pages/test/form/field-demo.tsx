@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button.tsx"
+import { Checkbox } from "@/components/ui/checkbox.tsx"
 import {
     Field, FieldContent,
     FieldDescription,
@@ -8,16 +8,16 @@ import {
     FieldLegend,
     FieldSeparator,
     FieldSet,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/field.tsx"
+import { Input } from "@/components/ui/input.tsx"
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/select.tsx"
+import { Textarea } from "@/components/ui/textarea.tsx"
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.tsx";
 
 
