@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import type {RoleSearchParam, RoleVO} from "@/types/roles.ts";
-import {deleteRoleAPI, getRoleListAPI} from "@/apis/role-api.ts";
+import {getRoleListAPI} from "@/apis/role-api.ts";
 import {toast} from "sonner";
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {
-    Delete,
     Plus,
     RotateCw, Search, Trash2,
 } from "lucide-react";
@@ -41,17 +40,6 @@ import {
     STATUS_ENABLED
 } from "@/types/constant.ts";
 import {
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogTitle,
-    AlertDialogTrigger
-} from "@/components/ui/alert-dialog.tsx";
-import {
     Select, SelectContent,
     SelectItem, SelectTrigger,
     SelectValue
@@ -59,6 +47,7 @@ import {
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import AddRoleForm from "@/pages/system/role/add-role-form.tsx";
 import EditRoleForm from "@/pages/system/role/edit-role-form.tsx";
+import DeleteRoleDialog from "@/pages/system/role/delete-role-dialog.tsx";
 
 
 /**
@@ -82,10 +71,7 @@ const initSearchParams = {
  */
 const RoleManageIndex = () => {
 
-    const [openEdit, setOpenEdit] = useState(false)
-
     const [data, setData] = useState<RoleVO[]>([])
-    const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [searchParams, setSearchParams] = useState<RoleSearchParam>(initSearchParams)
     const [total, setTotal] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false)
@@ -139,50 +125,17 @@ const RoleManageIndex = () => {
     const handleReset = async () => {
         setSearchParams(initSearchParams)
 
-        table.setColumnFilters([])
-        table.setSorting([])
-        table.setPageIndex(0)
-        table.setPageSize(10)
-
-        //await getRoleList(initSearchParams)
+        table.resetColumnFilters()
+        table.resetSorting()
+        table.resetPagination()
+        table.resetRowSelection()
+        table.resetColumnVisibility()
     }
 
     // 搜索操作
     const handleSearch = async () => {
         await getRoleList(searchParams)
     }
-
-    // 删除角色
-    const handleDelete = async (id: string) => {
-        if (id) {
-            const resp = await deleteRoleAPI(id);
-            if (resp.code === 200) {
-                toast.success('删除成功')
-            } else {
-                toast.error(resp.message);
-            }
-            await handleReset()
-        }
-    }
-
-    // 批量删除用户
-    const handleBatchDelete = async () => {
-        if (selectedIds && selectedIds.length > 0) {
-            try {
-                for (const id of selectedIds) {
-                    const resp = await deleteRoleAPI(id);
-                    if (resp.code !== 200) {
-                        toast.error(resp.message);
-                        return; // 如果出错可以提前返回，或者根据需求继续处理其他项
-                    }
-                }
-                toast.success('删除成功');
-            } finally {
-                //setSelectedIds([])
-                await handleReset();
-            }
-        }
-    };
 
 
     /**
@@ -360,34 +313,14 @@ const RoleManageIndex = () => {
                             orientation="vertical"
                             className="data-[orientation=vertical]:h-4"
                         />
-                        <div>
-                            <AlertDialog>
-                                <AlertDialogTrigger>
-                                    <a href='#' className='text-red-500 hover:text-red-600'>
-                                        删除
-                                    </a>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>确定删除该数据吗?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            删除后将无法恢复
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>取消</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            className="bg-red-500 hover:bg-red-600 cursor-pointer"
-                                            /*onClick={async () => {
-                                                await handleDelete(role.roleCode)
-                                            }}*/
-                                        >
-                                            删除
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
+                        <DeleteRoleDialog
+                            roleIds={[role.id || '']}
+                            onFinish={handleReset}
+                        >
+                            <a href='#' className='text-red-500 hover:text-red-600'>
+                                删除
+                            </a>
+                        </DeleteRoleDialog>
                     </div>
                 )
             }
@@ -479,6 +412,9 @@ const RoleManageIndex = () => {
 
     }, [sorting, columnFilters, table.getState().pagination]);
 
+    // 选中的角色 ID
+    const selectedRoleIds = table.getSelectedRowModel().rows
+        .map((row) => row.original.id || '');
 
     return (<>
             <div className='flex flex-col gap-6 p-4'>
@@ -558,15 +494,20 @@ const RoleManageIndex = () => {
                             添加
                         </Button>
                     </AddRoleForm>
-                    <Button
-                        className='cursor-pointer'
-                        variant='destructive'
-                        size='sm'
-                        disabled={table.getSelectedRowModel().rows.length < 1}
+                    <DeleteRoleDialog
+                        roleIds={selectedRoleIds}
+                        onFinish={handleReset}
                     >
-                        <Trash2 />
-                        删除
-                    </Button>
+                        <Button
+                            className='cursor-pointer'
+                            variant='destructive'
+                            size='sm'
+                            disabled={selectedRoleIds.length < 1}
+                        >
+                            <Trash2/>
+                            删除
+                        </Button>
+                    </DeleteRoleDialog>
 
                     <ColumnViewOptions<RoleVO>
                         className='cursor-pointer'
@@ -643,10 +584,9 @@ const RoleManageIndex = () => {
                         showQuickJumper
                     />
                 </div>
-
             </div>
         </>
     );
-}
+};
 
 export default RoleManageIndex;
