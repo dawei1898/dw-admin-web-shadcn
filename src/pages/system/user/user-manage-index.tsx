@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Card} from "@/components/ui/card.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
@@ -13,6 +13,9 @@ import {
     TableRow
 } from "@/components/ui/table.tsx";
 import {Button} from "@/components/ui/button.tsx";
+import type {UserSearchParam, UserVO} from "@/types/users.ts";
+import {deleteUserAPI, getUserListAPI} from "@/apis/user-api.ts";
+import {toast} from "sonner";
 
 
 const invoices = [
@@ -61,10 +64,112 @@ const invoices = [
 ]
 
 
+const initSearchParams = {
+    pageNum: 1,
+    pageSize: 10,
+}
+
+const initPagination = {
+    current: 1,
+    pageSize: 10,
+}
+
 /**
  * 用户管理
  */
 const UserManageIndex = () => {
+
+
+    const [data, setData] = useState<UserVO[]>([])
+    const [selectedIds, setSelectedIds] = useState<string[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
+    const [searchParams, setSearchParams] = useState<UserSearchParam>(initSearchParams)
+    const [pagination, setPagination] = useState(initPagination);
+
+
+
+    /**
+     * 初始化加载用户列表
+     */
+    useEffect(() => {
+            getUserList(searchParams)
+
+        }, [searchParams.pageNum,
+            searchParams.pageSize,
+            searchParams.createTimeSort,
+            searchParams.updateTimeSort]
+    );
+
+
+
+    // 获取用户列表
+    const getUserList = async (param: UserSearchParam) => {
+        try {
+            setLoading(true)
+
+            const resp = await getUserListAPI(param);
+            if (resp.code !== 200) {
+                toast.error(resp.message);
+                return;
+            }
+            setData(resp.data.list);
+            /*setPagination((pre) => ({
+                ...pre,
+                current: resp.data.pageNum,
+                pageSize: resp.data.pageSize,
+                total: Number(resp.data.total),
+                showTotal: (total) => `共 ${total} 条数据`,
+            }))*/
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // 搜索操作
+    const handleSearch = async () => {
+        await getUserList(searchParams)
+    }
+
+    // 重置搜索操作
+    const handleReset = async () => {
+        setSearchParams(initSearchParams)
+        setPagination(initPagination)
+        await getUserList(initSearchParams)
+    }
+
+    // 删除用户
+    const handleDelete =  async (id: string)  => {
+        if (id) {
+            const resp = await deleteUserAPI(id);
+            if (resp.code === 200) {
+                toast.success('删除成功')
+            } else {
+                toast.error(resp.message);
+            }
+            await handleReset()
+        }
+    }
+
+    // 批量删除用户
+    const handleBatchDelete = async () => {
+        if (selectedIds && selectedIds.length > 0) {
+            try {
+                for (const id of selectedIds) {
+                    const resp = await deleteUserAPI(id);
+                    if (resp.code !== 200) {
+                        toast.error(resp.message);
+                        return; // 如果出错可以提前返回，或者根据需求继续处理其他项
+                    }
+                }
+                toast.success('删除成功');
+            } finally {
+                //setSelectedIds([])
+                await handleReset();
+            }
+        }
+    };
+
+
     return (
         <div className='flex flex-col gap-4'>
             {/* 搜索栏 */}

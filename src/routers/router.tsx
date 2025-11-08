@@ -11,6 +11,7 @@ import WorkbenchIndex from "@/pages/dashboard/workbench/workbench-index.tsx";
 import AnalysisIndex from "@/pages/dashboard/analysis/analysis-index.tsx";
 import NotAuthorizedPage from "@/pages/error/403/not-authorized.tsx";
 import UserManageIndex from "@/pages/system/user/user-manage-index.tsx";
+import RoleManageIndex from "@/pages/system/role/role-manage-index.tsx";
 
 
 /**
@@ -64,6 +65,11 @@ const Router = createBrowserRouter([
                         path: "user",
                         Component: UserManageIndex,
                         handle: {breadcrumb: "用户管理"},
+                    },
+                    {
+                        path: "role",
+                        Component: RoleManageIndex,
+                        handle: {breadcrumb: "角色管理"},
                     },
 
                 ]

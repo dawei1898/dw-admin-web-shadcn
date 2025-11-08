@@ -12,11 +12,11 @@ import {
     RefreshCw, XCircle
 } from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
-import DataTableColumnHeader from "@/pages/table/data-table-column-header.tsx";
+import DataTableColumnHeader from "@/pages/test/table/data-table-column-header.tsx";
 import {Tag} from "@/components/tag.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
 import {Label} from "@radix-ui/react-label";
-import FilterDropdownMenu from "@/pages/table/filter-dropdown-menu.tsx";
+import FilterDropdownMenu from "@/pages/test/table/filter-dropdown-menu.tsx";
 
 export type Payment = {
     id: string,

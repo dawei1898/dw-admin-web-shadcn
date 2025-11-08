@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import type {Payment} from "@/pages/table/test-data.tsx";
-import DataTable from "@/pages/table/data-table.tsx";
-import {columns} from "@/pages/table/columns.tsx";
+import type {Payment} from "@/pages/test/table/test-data.tsx";
+import DataTable from "@/pages/test/table/data-table.tsx";
+import {columns} from "@/pages/test/table/columns.tsx";
 
 
 

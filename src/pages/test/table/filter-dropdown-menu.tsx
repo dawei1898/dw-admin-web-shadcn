@@ -1,6 +1,6 @@
 import React from 'react';
 import type {Table} from "@tanstack/react-table";
-import type {Payment} from "@/pages/table/columns.tsx";
+import type {Payment} from "@/pages/test/table/columns.tsx";
 import {
     DropdownMenu,
     DropdownMenuContent,

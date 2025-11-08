@@ -29,7 +29,7 @@ export const Tag = React.forwardRef<HTMLDivElement, TagProps>(
             <div
                 ref={ref}
                 className={cn(
-                    "inline-flex items-center gap-1 px-2 py-[2px] text-sm rounded-md border font-medium",
+                    "inline-flex items-center gap-1 px-3 py-[2px] text-xs rounded-md border ",
                     colorMap[color],
                     className
                 )}

@@ -19,9 +19,9 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
 import {ChevronLeft, ChevronRight} from "lucide-react";
-import DataTablePagination from "@/pages/table/data-table-pagination.tsx";
-import DataTableViewOptions from "@/pages/table/data-table-view-options.tsx";
-import {statusOptions} from "@/pages/table/columns.tsx";
+import DataTablePagination from "@/pages/test/table/data-table-pagination.tsx";
+import DataTableViewOptions from "@/pages/test/table/data-table-view-options.tsx";
+import {statusOptions} from "@/pages/test/table/columns.tsx";
 
 
 interface DataTableProps<TData, TValue> {
