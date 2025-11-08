@@ -58,12 +58,13 @@ import {
 } from "@/components/ui/select.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import AddRoleForm from "@/pages/system/role/add-role-form.tsx";
+import EditRoleForm from "@/pages/system/role/edit-role-form.tsx";
 
 
 /**
  * 状态选项
  */
-const statusOptions = [
+export const statusOptions = [
     {label: "全部", value: "all"},
     {label: "启用", value: STATUS_ENABLED},
     {label: "禁用", value: STATUS_DISABLED},
@@ -348,14 +349,13 @@ const RoleManageIndex = () => {
                 const role = row.original;
                 return (
                     <div className='flex justify-center items-center gap-3'>
-                        <div onClick={() => {
-                            //setOpenEdit(true)
-                            //editForm.setFieldsValue(record)
-                        }}>
+                        <EditRoleForm
+                            record={role}
+                            onFinish={handleReset}>
                             <a href='#' className='text-blue-500 hover:text-blue-600'>
                                 编辑
                             </a>
-                        </div>
+                        </EditRoleForm>
                         <Separator
                             orientation="vertical"
                             className="data-[orientation=vertical]:h-4"
