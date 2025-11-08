@@ -57,6 +57,7 @@ import {
     SelectValue
 } from "@/components/ui/select.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
+import AddRoleForm from "@/pages/system/role/add-role-form.tsx";
 
 
 /**
@@ -551,10 +552,12 @@ const RoleManageIndex = () => {
 
                 {/* 添加删除按钮 */}
                 <div className='flex justify-end items-center gap-4'>
-                    <Button size='sm' className='cursor-pointer'>
-                        <Plus/>
-                        添加
-                    </Button>
+                    <AddRoleForm onFinish={handleSearch}>
+                        <Button size='sm' className='cursor-pointer'>
+                            <Plus/>
+                            添加
+                        </Button>
+                    </AddRoleForm>
                     <Button
                         className='cursor-pointer'
                         variant='destructive'
@@ -643,8 +646,7 @@ const RoleManageIndex = () => {
 
             </div>
         </>
-    )
-        ;
-};
+    );
+}
 
 export default RoleManageIndex;
