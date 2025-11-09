@@ -39,6 +39,7 @@ import {
     STATUS_DISABLED,
     STATUS_ENABLED
 } from "@/types/constant.ts";
+import type {ColumnMeta} from "@/types/table.ts";
 import {
     Select, SelectContent,
     SelectItem, SelectTrigger,
@@ -168,6 +169,9 @@ const RoleManageIndex = () => {
         },
         {
             accessorKey: "roleCode",
+            meta: {
+                displayName: "角色码"
+            } as ColumnMeta,
             header: () => (
                 <div className='w-full min-w-20 text-center'>
                     角色码
@@ -184,6 +188,9 @@ const RoleManageIndex = () => {
         },
         {
             accessorKey: "roleName",
+            meta: {
+                displayName: "角色名称"
+            } as ColumnMeta,
             header: () => (
                 <div className='flex gap-2 w-full min-w-24 text-center'>
                     <Separator
@@ -206,6 +213,9 @@ const RoleManageIndex = () => {
         },
         {
             accessorKey: "status",
+            meta: {
+                displayName: "状态"
+            } as ColumnMeta,
             header: ({column}) => (
                 <div className='flex gap-2'>
                     <Separator
@@ -239,6 +249,9 @@ const RoleManageIndex = () => {
         },
         {
             accessorKey: "createTime",
+            meta: {
+                displayName: "创建时间"
+            } as ColumnMeta,
             header: ({column}) => (
                 <div className='flex gap-2'>
                     <Separator
@@ -262,6 +275,9 @@ const RoleManageIndex = () => {
         },
         {
             accessorKey: "updateTime",
+            meta: {
+                displayName: "更新时间"
+            } as ColumnMeta,
             header: ({column}) => (
                 <div className='flex gap-2'>
                     <Separator
