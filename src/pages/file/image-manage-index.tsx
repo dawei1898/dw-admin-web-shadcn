@@ -204,78 +204,12 @@ const ImageManageIndex = () => {
             ),
             cell: ({row}) => (
                 <div className='text-center'>
-                    <span className="uppercase font-mono">{row.original.type}</span>
+                    <span className="font-mono">{row.original.type}</span>
                 </div>
             ),
             filterFn: (row, columnId, filterValue) => {
                 return true // 去除过滤
             },
-        },
-        {
-            id: "preview",
-            meta: {
-                displayName: "图片预览"
-            } as ColumnMeta,
-            header: () => (
-                <div className='flex gap-2'>
-                    <Separator
-                        orientation="vertical"
-                        className="-ml-4 data-[orientation=vertical]:h-4"
-                    />
-                    <div className='flex justify-center w-full min-w-24 gap-2'>
-                        <span>图片预览</span>
-                    </div>
-                </div>
-            ),
-            cell: ({row}) => {
-                const file = row.original;
-                const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(file.type.toLowerCase());
-
-                return (
-                    <div className='flex justify-center'>
-                        {isImage && file.url ? (
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <div className='cursor-pointer group'>
-                                        <img
-                                            src={file.url}
-                                            alt={file.name}
-                                            className='w-12 h-12 object-cover rounded border border-gray-200 group-hover:border-blue-400 transition-colors'
-                                            onError={(e) => {
-                                                e.currentTarget.src = '';
-                                                e.currentTarget.style.display = 'none';
-                                            }}
-                                        />
-                                        <Eye className='w-3 h-3 text-gray-400 ml-1'/>
-                                    </div>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-4xl">
-                                    <DialogHeader>
-                                        <DialogTitle>{file.name}</DialogTitle>
-                                    </DialogHeader>
-                                    <div className="flex justify-center">
-                                        <img
-                                            src={file.url}
-                                            alt={file.name}
-                                            className="max-w-full max-h-96 object-contain rounded"
-                                        />
-                                    </div>
-                                    <div className="text-sm text-muted-foreground text-center">
-                                        <p>文件路径: {file.path}</p>
-                                        <p>文件大小: {file.size}</p>
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
-                        ) : (
-                            <div className='w-12 h-12 bg-gray-100 rounded flex items-center justify-center'>
-                                <Eye className='w-6 h-6 text-gray-400'/>
-                            </div>
-                        )}
-                    </div>
-                )
-            },
-            enableSorting: false,
-            enableHiding: false,
         },
         {
             accessorKey: "path",
@@ -312,6 +246,69 @@ const ImageManageIndex = () => {
             filterFn: (row, columnId, filterValue) => {
                 return true // 去除过滤
             },
+        },
+        {
+            id: "preview",
+            meta: {
+                displayName: "图片预览"
+            } as ColumnMeta,
+            header: () => (
+                <div className='flex gap-2'>
+                    <Separator
+                        orientation="vertical"
+                        className="-ml-4 data-[orientation=vertical]:h-4"
+                    />
+                    <div className='flex justify-center w-full min-w-24 gap-2'>
+                        <span>图片预览</span>
+                    </div>
+                </div>
+            ),
+            cell: ({row}) => {
+                const file = row.original;
+                //const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(file.type.toLowerCase());
+                const isImage = file.type.includes('image/');
+
+                return (
+                    <div className='flex justify-center'>
+                        {isImage && file.url ? (
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <div className='cursor-pointer group'>
+                                        <img
+                                            src={file.url}
+                                            alt={file.name}
+                                            className='w-24 h-24 object-cover rounded border border-gray-200 group-hover:border-blue-400 transition-colors'
+                                            onError={(e) => {
+                                                e.currentTarget.src = '';
+                                                e.currentTarget.style.display = 'none';
+                                            }}
+                                        />
+                                    </div>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-4xl">
+                                    <div className="flex justify-center">
+                                        <img
+                                            src={file.url}
+                                            alt={file.name}
+                                            className="max-w-full max-h-96 object-contain rounded"
+                                        />
+                                    </div>
+                                    <div className="text-sm text-muted-foreground text-center">
+                                        <p>文件名: {file. name}</p>
+                                        <p>文件大小: {file.size} B</p>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+                        ) : (
+                            <div className='w-12 h-12 bg-gray-100 rounded flex items-center justify-center'>
+                                <Eye className='w-6 h-6 text-gray-400'/>
+                            </div>
+                        )}
+                    </div>
+                )
+            },
+            enableSorting: false,
+            enableHiding: false,
         },
         {
             accessorKey: "createTime",
