@@ -12,6 +12,8 @@ import AnalysisIndex from "@/pages/dashboard/analysis/analysis-index.tsx";
 import NotAuthorizedPage from "@/pages/error/403/not-authorized.tsx";
 import UserManageIndex from "@/pages/system/user/user-manage-index.tsx";
 import RoleManageIndex from "@/pages/system/role/role-manage-index.tsx";
+import LogManageIndex from "@/pages/system/log/log-manage-index.tsx";
+import ImageManageIndex from "@/pages/file/image-manage-index.tsx";
 
 
 /**
@@ -71,10 +73,24 @@ const Router = createBrowserRouter([
                         Component: RoleManageIndex,
                         handle: {breadcrumb: "角色管理"},
                     },
-
+                    {
+                        path: "log",
+                        Component: LogManageIndex,
+                        handle: {breadcrumb: "日志管理"},
+                    }
                 ]
             },
-
+            {
+                path: "file",
+                handle: {breadcrumb: "文件管理"},
+                children: [
+                    {
+                        path: "image",
+                        Component: ImageManageIndex,
+                        handle: {breadcrumb: "图片管理"},
+                    }
+                ]
+            }
         ]
     },
     {
