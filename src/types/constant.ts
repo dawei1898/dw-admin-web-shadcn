@@ -5,6 +5,9 @@ export const FIELD_CREATE_TIME = 'createTime';
 // 更新时间字段
 export const FIELD_UPDATE_TIME = 'updateTime';
 
+// 登录时间字段
+export const FIELD_LOGIN_TIME = 'loginTime';
+
 // 升序
 export const SORT_ASC = 'asc';
 
