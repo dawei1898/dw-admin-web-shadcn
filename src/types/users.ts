@@ -16,6 +16,7 @@ export interface UserSearchParam extends PageParam {
 export interface UserParam {
     id?: string;
     name: string;
+    password?: string;
     email?: string;
     phone?: string;
     avatarUrl?: string;

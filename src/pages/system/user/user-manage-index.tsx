@@ -1,67 +1,45 @@
 import React, {useEffect, useState} from 'react';
-import {Card} from "@/components/ui/card.tsx";
-import {Input} from "@/components/ui/input.tsx";
-import {Label} from "@/components/ui/label.tsx";
-import {RotateCw, Search} from "lucide-react";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow
-} from "@/components/ui/table.tsx";
-import {Button} from "@/components/ui/button.tsx";
 import type {UserSearchParam, UserVO} from "@/types/users.ts";
-import {deleteUserAPI, getUserListAPI} from "@/apis/user-api.ts";
+import {getUserListAPI} from "@/apis/user-api.ts";
 import {toast} from "sonner";
-
-
-const invoices = [
-    {
-        invoice: "INV001",
-        paymentStatus: "Paid",
-        totalAmount: "$250.00",
-        paymentMethod: "Credit Card",
-    },
-    {
-        invoice: "INV002",
-        paymentStatus: "Pending",
-        totalAmount: "$150.00",
-        paymentMethod: "PayPal",
-    },
-    {
-        invoice: "INV003",
-        paymentStatus: "Unpaid",
-        totalAmount: "$350.00",
-        paymentMethod: "Bank Transfer",
-    },
-    {
-        invoice: "INV004",
-        paymentStatus: "Paid",
-        totalAmount: "$450.00",
-        paymentMethod: "Credit Card",
-    },
-    {
-        invoice: "INV005",
-        paymentStatus: "Paid",
-        totalAmount: "$550.00",
-        paymentMethod: "PayPal",
-    },
-    {
-        invoice: "INV006",
-        paymentStatus: "Pending",
-        totalAmount: "$200.00",
-        paymentMethod: "Bank Transfer",
-    },
-    {
-        invoice: "INV007",
-        paymentStatus: "Unpaid",
-        totalAmount: "$300.00",
-        paymentMethod: "Credit Card",
-    },
-]
+import {Label} from "@/components/ui/label.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {
+    Plus,
+    RotateCw, Search, Trash2,
+} from "lucide-react";
+import {
+    Table, TableBody, TableCell,
+    TableHead, TableHeader, TableRow
+} from "@/components/ui/table.tsx";
+import {
+    type ColumnDef,
+    type ColumnFiltersState,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    type SortingState, useReactTable,
+    type VisibilityState
+} from "@tanstack/react-table";
+import {Checkbox} from "@/components/ui/checkbox.tsx";
+import {Separator} from "@/components/ui/separator.tsx";
+import ColumnSorting from "@/components/table/column-sorting.tsx";
+import TablePagination from "@/components/table/table-pagination.tsx";
+import ColumnViewOptions from "@/components/table/column-view-options.tsx";
+import {
+    FIELD_CREATE_TIME,
+    FIELD_UPDATE_TIME,
+    SORT_ASC,
+    SORT_DESC,
+} from "@/types/constant.ts";
+import type {ColumnMeta} from "@/types/table.ts";
+import {Skeleton} from "@/components/ui/skeleton.tsx";
+import AddUserForm from "@/pages/system/user/add-user-form.tsx";
+import EditUserForm from "@/pages/system/user/edit-user-form.tsx";
+import DeleteUserDialog from "@/pages/system/user/delete-user-dialog.tsx";
 
 
 const initSearchParams = {
@@ -69,23 +47,25 @@ const initSearchParams = {
     pageSize: 10,
 }
 
-const initPagination = {
-    current: 1,
-    pageSize: 10,
-}
 
 /**
  * 用户管理
  */
 const UserManageIndex = () => {
 
-
     const [data, setData] = useState<UserVO[]>([])
-    const [selectedIds, setSelectedIds] = useState<string[]>([])
-    const [loading, setLoading] = useState<boolean>(false)
     const [searchParams, setSearchParams] = useState<UserSearchParam>(initSearchParams)
-    const [pagination, setPagination] = useState(initPagination);
+    const [total, setTotal] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(false)
 
+    // 排序
+    const [sorting, setSorting] = useState<SortingState>([])
+    // 搜索过滤
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    // 列显示
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    // 选中的行
+    const [rowSelection, setRowSelection] = useState({})
 
 
     /**
@@ -101,9 +81,11 @@ const UserManageIndex = () => {
     );
 
 
-
     // 获取用户列表
     const getUserList = async (param: UserSearchParam) => {
+        if (loading) {
+            return
+        }
         try {
             setLoading(true)
 
@@ -113,16 +95,23 @@ const UserManageIndex = () => {
                 return;
             }
             setData(resp.data.list);
-            /*setPagination((pre) => ({
-                ...pre,
-                current: resp.data.pageNum,
-                pageSize: resp.data.pageSize,
-                total: Number(resp.data.total),
-                showTotal: (total) => `共 ${total} 条数据`,
-            }))*/
+
+            // 设置总数据条数
+            setTotal(resp.data.total);
         } finally {
             setLoading(false)
         }
+    }
+
+    // 重置搜索操作
+    const handleReset = async () => {
+        setSearchParams(initSearchParams)
+
+        table.resetColumnFilters()
+        table.resetSorting()
+        table.resetPagination()
+        table.resetRowSelection()
+        table.resetColumnVisibility()
     }
 
     // 搜索操作
@@ -130,111 +119,446 @@ const UserManageIndex = () => {
         await getUserList(searchParams)
     }
 
-    // 重置搜索操作
-    const handleReset = async () => {
-        setSearchParams(initSearchParams)
-        setPagination(initPagination)
-        await getUserList(initSearchParams)
-    }
 
-    // 删除用户
-    const handleDelete =  async (id: string)  => {
-        if (id) {
-            const resp = await deleteUserAPI(id);
-            if (resp.code === 200) {
-                toast.success('删除成功')
-            } else {
-                toast.error(resp.message);
+    /**
+     * 表格标题行
+     */
+    const columns: ColumnDef<UserVO>[] = [
+        {
+            id: "select",
+            header: ({table}) => (
+                <div className='flex justify-center ml-2'>
+                    <Checkbox
+                        checked={table.getIsAllPageRowsSelected() ||
+                            (table.getIsSomePageRowsSelected() && "indeterminate")}
+                        onCheckedChange={
+                            (value) => table.toggleAllPageRowsSelected(!!value)
+                        }
+                    />
+                </div>
+            ),
+            cell: ({row}) => (
+                <div className='flex justify-center ml-2'>
+                    <Checkbox
+                        checked={row.getIsSelected()}
+                        onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    />
+                </div>
+            ),
+            enableSorting: false,
+            enableHiding: false,
+        },
+        {
+            accessorKey: "name",
+            meta: {
+                displayName: "用户名"
+            } as ColumnMeta,
+            header: () => (
+                <div className='w-full min-w-20 text-center'>
+                    用户名
+                </div>
+            ),
+            cell: ({row}) => (
+                <div className='text-center'>
+                    <span>{row.original.name}</span>
+                </div>
+            ),
+            filterFn: (row, columnId, filterValue) => {
+                return true // 去除过滤
+            },
+        },
+        {
+            accessorKey: "email",
+            meta: {
+                displayName: "邮箱"
+            } as ColumnMeta,
+            header: () => (
+                <div className='flex gap-2 w-full min-w-24 text-center'>
+                    <Separator
+                        orientation="vertical"
+                        className="-ml-4 data-[orientation=vertical]:h-4"
+                    />
+                    <div className='flex justify-center w-full gap-2'>
+                        <span>邮箱</span>
+                    </div>
+                </div>
+            ),
+            cell: ({row}) => (
+                <div className='text-center'>
+                    <span>{row.original.email || '-'}</span>
+                </div>
+            ),
+            filterFn: (row, columnId, filterValue) => {
+                return true // 去除过滤
+            },
+        },
+        {
+            accessorKey: "phone",
+            meta: {
+                displayName: "手机号"
+            } as ColumnMeta,
+            header: () => (
+                <div className='flex gap-2 w-full min-w-24 text-center'>
+                    <Separator
+                        orientation="vertical"
+                        className="-ml-4 data-[orientation=vertical]:h-4"
+                    />
+                    <div className='flex justify-center w-full gap-2'>
+                        <span>手机号</span>
+                    </div>
+                </div>
+            ),
+            cell: ({row}) => (
+                <div className='text-center'>
+                    <span>{row.original.phone || '-'}</span>
+                </div>
+            ),
+            filterFn: (row, columnId, filterValue) => {
+                return true // 去除过滤
+            },
+        },
+          {
+            accessorKey: "createTime",
+            meta: {
+                displayName: "创建时间"
+            } as ColumnMeta,
+            header: ({column}) => (
+                <div className='flex gap-2'>
+                    <Separator
+                        orientation="vertical"
+                        className="-ml-4 data-[orientation=vertical]:h-4"
+                    />
+                    <div className='flex justify-center items-center w-full gap-2'>
+                        <span>创建时间</span>
+                        <ColumnSorting column={column}/>
+                    </div>
+                </div>
+            ),
+            cell: ({row}) => (
+                <div className='text-center'>
+                    <span>{row.original.createTime}</span>
+                </div>
+            ),
+            sortingFn: (a, b) => {
+                return 0 // 去除过滤
+            },
+        },
+        {
+            accessorKey: "updateTime",
+            meta: {
+                displayName: "更新时间"
+            } as ColumnMeta,
+            header: ({column}) => (
+                <div className='flex gap-2'>
+                    <Separator
+                        orientation="vertical"
+                        className="-ml-4 data-[orientation=vertical]:h-4"
+                    />
+                    <div className='flex justify-center items-center w-full gap-2'>
+                        <span>更新时间</span>
+                        <ColumnSorting column={column}/>
+                    </div>
+                </div>
+            ),
+            cell: ({row}) => (
+                <div className='text-center'>
+                    <span>{row.original.updateTime}</span>
+                </div>
+            ),
+            sortingFn: (a, b) => {
+                return 0 // 去除过滤
+            },
+        },
+        {
+            id: "action",
+            enableSorting: false,
+            enableHiding: false,
+            header: () => (
+                <div className='flex gap-2'>
+                    <Separator
+                        orientation="vertical"
+                        className="-ml-4 data-[orientation=vertical]:h-4"
+                    />
+                    <div className='flex justify-center w-full gap-2'>
+                        <span>操作</span>
+                    </div>
+                </div>
+            ),
+            cell: ({row}) => {
+                const user = row.original;
+                return (
+                    <div className='flex justify-center items-center gap-3'>
+                        <EditUserForm
+                            record={user}
+                            onFinish={handleReset}>
+                            <a href='#' className='text-blue-500 hover:text-blue-600'>
+                                编辑
+                            </a>
+                        </EditUserForm>
+                        <Separator
+                            orientation="vertical"
+                            className="data-[orientation=vertical]:h-4"
+                        />
+                        <DeleteUserDialog
+                            userIds={[user.id || '']}
+                            onFinish={handleReset}
+                        >
+                            <a href='#' className='text-red-500 hover:text-red-600'>
+                                删除
+                            </a>
+                        </DeleteUserDialog>
+                    </div>
+                )
             }
-            await handleReset()
         }
-    }
+    ]
 
-    // 批量删除用户
-    const handleBatchDelete = async () => {
-        if (selectedIds && selectedIds.length > 0) {
-            try {
-                for (const id of selectedIds) {
-                    const resp = await deleteUserAPI(id);
-                    if (resp.code !== 200) {
-                        toast.error(resp.message);
-                        return; // 如果出错可以提前返回，或者根据需求继续处理其他项
-                    }
+    const table = useReactTable({
+        columns,
+        data,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        onSortingChange: setSorting,
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnFiltersChange: setColumnFilters,
+        onColumnVisibilityChange: setColumnVisibility,
+        onRowSelectionChange: setRowSelection,
+        state: {
+            sorting,
+            columnFilters,
+            rowSelection,
+            columnVisibility,
+        }
+    });
+
+    useEffect(() => {
+        const pagination = table.getState().pagination;
+        console.log('pagination:', JSON.stringify(pagination))
+
+        let pageNum: number = 1;
+        let pageSize: number = 10;
+        let name: string = '';
+        let email: string = '';
+        let phone: string = '';
+        let createTimeSort: string = '';
+        let updateTimeSort: string = '';
+
+        // 分页
+        if (pagination) {
+            pageNum = pagination.pageIndex + 1;
+            pageSize = pagination.pageSize;
+        }
+        // 筛选
+        if (columnFilters && columnFilters.length > 0) {
+            for (let filter of columnFilters) {
+                const filedName = filter.id;
+                switch (filedName) {
+                    case 'name':
+                        name = (filter.value as string).trim();
+                        break;
+                    case 'email':
+                        email = (filter.value as string).trim();
+                        break;
+                    case 'phone':
+                        phone = (filter.value as string).trim();
+                        break;
                 }
-                toast.success('删除成功');
-            } finally {
-                //setSelectedIds([])
-                await handleReset();
             }
         }
-    };
+        // 排序
+        if (sorting && sorting.length > 0) {
+            // 排序字段
+            const field = sorting[0].id;
+            // 排序顺序
+            const isDesc = sorting[0].desc;
+            // 创建时间排序
+            if (field === FIELD_CREATE_TIME) {
+                createTimeSort = isDesc ? SORT_DESC : SORT_ASC
+            }
+            // 更新时间排序
+            if (field === FIELD_UPDATE_TIME) {
+                updateTimeSort = isDesc ? SORT_DESC : SORT_ASC
+            }
+        }
 
+        setSearchParams({
+            pageNum,
+            pageSize,
+            name,
+            email,
+            phone,
+            createTimeSort,
+            updateTimeSort
+        })
 
-    return (
-        <div className='flex flex-col gap-4'>
-            {/* 搜索栏 */}
-            <div>
-                <Card className='flex flex-row justify-between items-center p-4 md:p-6'>
+    }, [sorting, columnFilters, table.getState().pagination]);
+
+    // 选中的用户 ID
+    const selectedUserIds = table.getSelectedRowModel().rows
+        .map((row) => row.original.id || '');
+
+    return (<>
+            <div className='flex flex-col gap-6 p-4'>
+                {/* 搜索栏 */}
+                <div className='flex items-center gap-6 p-4 rounded-md border border-secondary'>
                     <div className='flex gap-6'>
                         <div className='flex'>
-                            <Label>账号：</Label>
-                            <Input className='w-40'/>
+                            <Label className='font-normal'> 用户名：</Label>
+                            <Input
+                                className='max-w-40 ml-1'
+                                placeholder=''
+                                value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                                onChange={(event) => {
+                                    table.getColumn("name")?.setFilterValue(event.target.value)
+                                }}
+                            />
                         </div>
                         <div className='flex'>
-                            <Label>邮箱：</Label>
-                            <Input className='w-40'/>
+                            <Label className='font-normal'> 邮箱：</Label>
+                            <Input
+                                className='max-w-40 ml-1'
+                                placeholder=''
+                                value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+                                onChange={(event) => {
+                                    table.getColumn("email")?.setFilterValue(event.target.value)
+                                }}
+                            />
                         </div>
                         <div className='flex'>
-                            <Label>手机：</Label>
-                            <Input className='w-40'/>
+                            <Label className='font-normal'> 手机号：</Label>
+                            <Input
+                                className='max-w-40 ml-1'
+                                placeholder=''
+                                value={(table.getColumn("phone")?.getFilterValue() as string) ?? ""}
+                                onChange={(event) => {
+                                    table.getColumn("phone")?.setFilterValue(event.target.value)
+                                }}
+                            />
                         </div>
                     </div>
-                    <div className='space-x-4'>
-                        <Button variant="outline" className='cursor-pointer'>
-                            <RotateCw/>
-                            重置
-                        </Button>
-                        <Button className='cursor-pointer'>
+
+                    <div className='flex gap-2 ml-auto'>
+                        <Button
+                            className='cursor-pointer'
+                            size='sm'
+                            onClick={() => handleSearch()}
+                        >
                             <Search/>
                             搜索
                         </Button>
+                        <Button
+                            className='cursor-pointer'
+                            variant="outline"
+                            size='sm'
+                            onClick={() => handleReset()}
+                        >
+                            <RotateCw/>
+                            重置
+                        </Button>
                     </div>
-                </Card>
+                </div>
 
-            </div>
+                {/* 添加删除按钮 */}
+                <div className='flex justify-end items-center gap-4'>
+                    <AddUserForm onFinish={handleSearch}>
+                        <Button size='sm' className='cursor-pointer'>
+                            <Plus/>
+                            添加
+                        </Button>
+                    </AddUserForm>
+                    <DeleteUserDialog
+                        userIds={selectedUserIds}
+                        onFinish={handleReset}
+                    >
+                        <Button
+                            className='cursor-pointer'
+                            variant='destructive'
+                            size='sm'
+                            disabled={selectedUserIds.length < 1}
+                        >
+                            <Trash2/>
+                            删除
+                        </Button>
+                    </DeleteUserDialog>
 
-            {/* 用户列表 */}
-            <div className='h-full w-full'>
-                <Card>
+                    <ColumnViewOptions<UserVO>
+                        className='cursor-pointer'
+                        label='列'
+                        table={table}
+                    />
+                </div>
+
+                {/* 数据列表 */}
+                <div className="overflow-hidden rounded-md border">
                     <Table>
                         <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">Invoice</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Method</TableHead>
-                                <TableHead className="text-right">Amount</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {invoices.map((invoice) => (
-                                <TableRow key={invoice.invoice}>
-                                    <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                                    <TableCell>{invoice.paymentStatus}</TableCell>
-                                    <TableCell>{invoice.paymentMethod}</TableCell>
-                                    <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder ? null : (
+                                                flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )
+                                            )}
+                                        </TableHead>
+                                    ))}
                                 </TableRow>
                             ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row) => (
+                                        <TableRow
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && "selected"}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                )
+                                : (loading ? (
+                                        <TableRow>
+                                            <TableCell colSpan={columns.length} className={'h-32 text-center'}>
+                                                <div className="flex items-center space-x-4 p-4">
+                                                    <Skeleton className="h-12 w-12 rounded-full"/>
+                                                    <div className="space-y-2 w-full">
+                                                        <Skeleton className="h-4 max-w-4xl"/>
+                                                        <Skeleton className="h-4 max-w-4xl"/>
+                                                        <Skeleton className="h-4 max-w-4xl"/>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={columns.length} className={'h-32 text-center'}>
+                                                暂无数据
+                                            </TableCell>
+                                        </TableRow>)
+
+                                )}
                         </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TableCell colSpan={3}>Total</TableCell>
-                                <TableCell className="text-right">$2,500.00</TableCell>
-                            </TableRow>
-                        </TableFooter>
                     </Table>
-                </Card>
+
+                    <TablePagination
+                        table={table}
+                        total={total}
+                        showSizeChanger
+                        showQuickJumper
+                    />
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 
