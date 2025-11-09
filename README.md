@@ -43,7 +43,7 @@ npx shadcn@latest init
 
 添加组件
 ```shell
-npx shadcn@latest add dialog
+npx shadcn@latest add avatar
 ```
 
 安装 shadcn MCP
