@@ -6,7 +6,8 @@
       "WebSearch",
       "mcp__web-search-prime__webSearchPrime",
       "Bash(npm run build:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": []
