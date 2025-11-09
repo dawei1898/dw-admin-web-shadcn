@@ -11,6 +11,42 @@ import {Settings2} from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 
 
+/**
+ * 从列定义中提取显示名称
+ * @param column 表格列对象
+ * @returns 显示名称
+ */
+const getColumnDisplayName = <TData,>(column: any): string => {
+    try {
+        // 简单的列名映射，根据列ID返回中文名称
+        const columnNamesMap: Record<string, string> = {
+            'roleCode': '角色码',
+            'roleName': '角色名称',
+            'status': '状态',
+            'createTime': '创建时间',
+            'updateTime': '更新时间',
+        };
+
+        // 优先使用映射表中的名称
+        if (columnNamesMap[column.id]) {
+            return columnNamesMap[column.id];
+        }
+
+        // 如果 header 是字符串，直接返回
+        const header = column.columnDef.header;
+        if (typeof header === 'string') {
+            return header;
+        }
+
+        // 回退到列 ID
+        return column.id;
+    } catch (error) {
+        console.warn('Failed to extract column display name:', error);
+        return column.id;
+    }
+};
+
+
 interface ColumnViewOptionsProps<TData> {
     table: Table<TData>,
     label?: string,
@@ -53,7 +89,7 @@ const ColumnViewOptions = <TData,>(
                                         column.toggleVisibility(value)
                                     }}
                                 >
-                                    {column.id}
+                                    {getColumnDisplayName(column)}
                                 </DropdownMenuCheckboxItem>
                             )
                         })

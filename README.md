@@ -46,6 +46,11 @@ npx shadcn@latest init
 npx shadcn@latest add dialog
 ```
 
+安装 shadcn MCP
+```shell
+npx shadcn@latest mcp init --client claude
+```
+
 react-icons 图标 https://react-icons.github.io/react-icons
 ```shell
 npm install react-icons --save
@@ -80,8 +85,4 @@ npm install zustand
 表单校验
 ```shell
 npm install zod
-```
-
-```shell
-npx shadcn@latest mcp init --client claude
 ```
