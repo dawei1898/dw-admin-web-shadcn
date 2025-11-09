@@ -81,3 +81,7 @@ npm install zustand
 ```shell
 npm install zod
 ```
+
+```shell
+npx shadcn@latest mcp init --client claude
+```
