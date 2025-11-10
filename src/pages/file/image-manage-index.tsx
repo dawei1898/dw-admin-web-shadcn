@@ -15,19 +15,18 @@ import {
 import {
     type ColumnDef,
     type ColumnFiltersState,
+    type SortingState,
+    type VisibilityState,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
-    getPaginationRowModel,
     getSortedRowModel,
-    type SortingState, useReactTable,
-    type VisibilityState
+    useReactTable,
 } from "@tanstack/react-table";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
-import ColumnFilter from "@/components/table/column-filter.tsx";
 import ColumnSorting from "@/components/table/column-sorting.tsx";
-import TablePagination from "@/components/table/table-pagination.tsx";
+import TablePagination, {initPagination, type TablePaginationConfig} from "@/components/table/table-pagination.tsx";
 import ColumnViewOptions from "@/components/table/column-view-options.tsx";
 import {
     FIELD_CREATE_TIME,
@@ -37,15 +36,8 @@ import {
 } from "@/types/constant.ts";
 import type {ColumnMeta} from "@/types/table.ts";
 import {
-    Select, SelectContent,
-    SelectItem, SelectTrigger,
-    SelectValue
-} from "@/components/ui/select.tsx";
-import {
     Dialog,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
@@ -63,9 +55,10 @@ const initSearchParams = {
 const ImageManageIndex = () => {
 
     const [data, setData] = useState<FileVO[]>([])
-    const [searchParams, setSearchParams] = useState<FileSearchParam>(initSearchParams)
-    const [total, setTotal] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false)
+    const [searchParams, setSearchParams] = useState<FileSearchParam>(initSearchParams)
+    // 分页
+    const [pagination, setPagination] = useState<TablePaginationConfig>(initPagination)
 
     // 排序
     const [sorting, setSorting] = useState<SortingState>([])
@@ -102,8 +95,12 @@ const ImageManageIndex = () => {
             }
             setData(resp.data.list);
 
-            // 设置总数据条数
-            setTotal(resp.data.total);
+            // 设置分页数据
+            setPagination({
+                pageNum: Number(resp.data.pageNum),
+                pageSize: Number(resp.data.pageSize),
+                total: Number(resp.data.total),
+            })
         } finally {
             setLoading(false)
         }
@@ -123,6 +120,10 @@ const ImageManageIndex = () => {
     // 搜索操作
     const handleSearch = async () => {
         await getFileList(searchParams)
+    }
+
+    const onChangePagination = (pageNum: number, pageSize: number) => {
+        setPagination({...pagination, pageNum, pageSize})
     }
 
     /**
@@ -294,7 +295,7 @@ const ImageManageIndex = () => {
                                         />
                                     </div>
                                     <div className="text-sm text-muted-foreground text-center">
-                                        <p>文件名: {file. name}</p>
+                                        <p>文件名: {file.name}</p>
                                         <p>文件大小: {file.size} B</p>
                                     </div>
                                 </DialogContent>
@@ -373,7 +374,6 @@ const ImageManageIndex = () => {
         columns,
         data,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         onSortingChange: setSorting,
         getFilteredRowModel: getFilteredRowModel(),
@@ -389,11 +389,6 @@ const ImageManageIndex = () => {
     });
 
     useEffect(() => {
-        console.log('sorting:', sorting)
-        console.log('columnFilters:', columnFilters)
-        const pagination = table.getState().pagination;
-        console.log('pagination:', pagination)
-        console.log('rowSelection:', rowSelection)
 
         let pageNum: number = 1;
         let pageSize: number = 10;
@@ -405,7 +400,7 @@ const ImageManageIndex = () => {
 
         // 分页
         if (pagination) {
-            pageNum = pagination.pageIndex + 1;
+            pageNum = pagination.pageNum;
             pageSize = pagination.pageSize;
         }
         // 筛选
@@ -451,7 +446,7 @@ const ImageManageIndex = () => {
             updateTimeSort
         })
 
-    }, [sorting, columnFilters, table.getState().pagination]);
+    }, [sorting, columnFilters, pagination]);
 
     // 选中的文件 ID
     const selectedFileIds = table.getSelectedRowModel().rows
@@ -592,8 +587,8 @@ const ImageManageIndex = () => {
                     </Table>
 
                     <TablePagination
-                        table={table}
-                        total={total}
+                        pagination={pagination}
+                        onChange={onChangePagination}
                         showSizeChanger
                         showQuickJumper
                     />

@@ -29,7 +29,7 @@ import {Separator} from "@/components/ui/separator.tsx";
 import {Tag} from "@/components/tag.tsx";
 import ColumnFilter from "@/components/table/column-filter.tsx";
 import ColumnSorting from "@/components/table/column-sorting.tsx";
-import TablePagination from "@/components/table/table-pagination.tsx";
+import TablePagination, {initPagination, type TablePaginationConfig} from "@/components/table/table-pagination.tsx";
 import ColumnViewOptions from "@/components/table/column-view-options.tsx";
 import {
     FIELD_CREATE_TIME,
@@ -51,6 +51,7 @@ import EditRoleForm from "@/pages/system/role/edit-role-form.tsx";
 import DeleteRoleDialog from "@/pages/system/role/delete-role-dialog.tsx";
 
 
+
 /**
  * 状态选项
  */
@@ -60,12 +61,10 @@ export const statusOptions = [
     {label: "禁用", value: STATUS_DISABLED},
 ]
 
-
 const initSearchParams = {
     pageNum: 1,
     pageSize: 10,
 }
-
 
 /**
  * 角色管理
@@ -73,9 +72,10 @@ const initSearchParams = {
 const RoleManageIndex = () => {
 
     const [data, setData] = useState<RoleVO[]>([])
-    const [searchParams, setSearchParams] = useState<RoleSearchParam>(initSearchParams)
-    const [total, setTotal] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false)
+    const [searchParams, setSearchParams] = useState<RoleSearchParam>(initSearchParams)
+    // 分页
+    const [pagination, setPagination] = useState<TablePaginationConfig>(initPagination)
 
     // 排序
     const [sorting, setSorting] = useState<SortingState>([])
@@ -115,8 +115,12 @@ const RoleManageIndex = () => {
             }
             setData(resp.data.list);
 
-            // 设置总数据条数
-            setTotal(resp.data.total);
+            // 设置分页数据
+            setPagination({
+                pageNum: Number(resp.data.pageNum),
+                pageSize: Number(resp.data.pageSize),
+                total: Number(resp.data.total),
+            })
         } finally {
             setLoading(false)
         }
@@ -138,6 +142,9 @@ const RoleManageIndex = () => {
         await getRoleList(searchParams)
     }
 
+    const onChangePagination = (pageNum: number, pageSize: number) => {
+        setPagination({...pagination, pageNum, pageSize})
+    }
 
     /**
      * 表格标题行
@@ -347,7 +354,6 @@ const RoleManageIndex = () => {
         columns,
         data,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         onSortingChange: setSorting,
         getFilteredRowModel: getFilteredRowModel(),
@@ -363,11 +369,10 @@ const RoleManageIndex = () => {
     });
 
     useEffect(() => {
-        console.log('sorting:', sorting)
-        console.log('columnFilters:', columnFilters)
-        const pagination = table.getState().pagination;
-        console.log('pagination:', pagination)
-        console.log('rowSelection:', rowSelection)
+        // console.log('sorting:', sorting)
+        // console.log('columnFilters:', columnFilters)
+        // console.log('pagination:', pagination)
+        // console.log('rowSelection:', rowSelection)
 
         let pageNum: number = 1;
         let pageSize: number = 10;
@@ -379,7 +384,7 @@ const RoleManageIndex = () => {
 
         // 分页
         if (pagination) {
-            pageNum = pagination.pageIndex + 1;
+            pageNum = pagination.pageNum;
             pageSize = pagination.pageSize;
         }
         // 筛选
@@ -426,7 +431,7 @@ const RoleManageIndex = () => {
             updateTimeSort
         })
 
-    }, [sorting, columnFilters, table.getState().pagination]);
+    }, [sorting, columnFilters, pagination]);
 
     // 选中的角色 ID
     const selectedRoleIds = table.getSelectedRowModel().rows
@@ -594,8 +599,8 @@ const RoleManageIndex = () => {
                     </Table>
 
                     <TablePagination
-                        table={table}
-                        total={total}
+                        pagination={pagination}
+                        onChange={onChangePagination}
                         showSizeChanger
                         showQuickJumper
                     />

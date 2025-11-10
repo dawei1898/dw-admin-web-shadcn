@@ -1,6 +1,6 @@
 import {axioser} from "@/utils/http-util.ts";
 import type {ApiResponse} from "@/types";
-import type {LoginParam, RegisterParam} from "../types/auth.ts";
+import type {LoginParam, RegisterParam} from "@/types/auth.ts";
 
 /**
  * 注册接口

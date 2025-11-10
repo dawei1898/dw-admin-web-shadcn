@@ -1,5 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import type {LoginLogSearchParam, LoginLogVO} from "@/types/loginLog.ts";
+import type {
+    LoginLogSearchParam,
+    LoginLogVO
+} from "@/types/loginLog.ts";
 import {getLoginLogListAPI} from "@/apis/loginLog-api.ts";
 import {toast} from "sonner";
 import {Label} from "@/components/ui/label.tsx";
@@ -18,7 +21,6 @@ import {
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
-    getPaginationRowModel,
     getSortedRowModel,
     type SortingState, useReactTable,
     type VisibilityState
@@ -27,23 +29,27 @@ import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
 import {Tag} from "@/components/tag.tsx";
 import ColumnSorting from "@/components/table/column-sorting.tsx";
-import TablePagination from "@/components/table/table-pagination.tsx";
+import TablePagination,
+{
+    initPagination,
+    type TablePaginationConfig
+} from "@/components/table/table-pagination.tsx";
 import ColumnViewOptions from "@/components/table/column-view-options.tsx";
 import {
     FIELD_LOGIN_TIME,
     SORT_ASC,
     SORT_DESC,
-    STATUS_ENABLED
 } from "@/types/constant.ts";
 import type {ColumnMeta} from "@/types/table.ts";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import DeleteLogDialog from "@/pages/system/log/delete-log-dialog.tsx";
 
 
-const initSearchParams = {
+ const initSearchParams = {
     pageNum: 1,
     pageSize: 10,
 }
+
 
 
 /**
@@ -52,9 +58,10 @@ const initSearchParams = {
 const LogManageIndex = () => {
 
     const [data, setData] = useState<LoginLogVO[]>([])
-    const [searchParams, setSearchParams] = useState<LoginLogSearchParam>(initSearchParams)
-    const [total, setTotal] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false)
+    const [searchParams, setSearchParams] = useState<LoginLogSearchParam>(initSearchParams)
+    // 分页
+    const [pagination, setPagination] = useState<TablePaginationConfig>(initPagination)
 
     // 排序
     const [sorting, setSorting] = useState<SortingState>([])
@@ -93,8 +100,12 @@ const LogManageIndex = () => {
             }
             setData(resp.data.list);
 
-            // 设置总数据条数
-            setTotal(resp.data.total);
+            // 设置分页数据
+            setPagination({
+                pageNum: Number(resp.data.pageNum),
+                pageSize: Number(resp.data.pageSize),
+                total: Number(resp.data.total),
+            })
         } finally {
             setLoading(false)
         }
@@ -113,6 +124,11 @@ const LogManageIndex = () => {
     const handleSearch = async () => {
         await getLogList(searchParams)
     }
+
+    const onChangePagination = (pageNum: number, pageSize: number) => {
+        setPagination({...pagination, pageNum, pageSize})
+    }
+
 
     /**
      * 表格标题行
@@ -375,7 +391,6 @@ const LogManageIndex = () => {
         columns,
         data,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         onSortingChange: setSorting,
         getFilteredRowModel: getFilteredRowModel(),
@@ -390,13 +405,12 @@ const LogManageIndex = () => {
         }
     });
 
-    
+
     useEffect(() => {
-        console.log('sorting:', sorting)
-        console.log('columnFilters:', columnFilters)
-        const pagination = table.getState().pagination;
-        console.log('pagination:', pagination)
-        console.log('rowSelection:', rowSelection)
+        // console.log('sorting:', sorting)
+        // console.log('columnFilters:', columnFilters)
+        // console.log('pagination:', pagination)
+        // console.log('rowSelection:', rowSelection)
 
         let pageNum: number = 1;
         let pageSize: number = 10;
@@ -406,7 +420,7 @@ const LogManageIndex = () => {
 
         // 分页
         if (pagination) {
-            pageNum = pagination.pageIndex + 1;
+            pageNum = pagination.pageNum;
             pageSize = pagination.pageSize;
         }
         // 筛选
@@ -443,7 +457,7 @@ const LogManageIndex = () => {
             loginTimeSort
         })
 
-    }, [sorting, columnFilters, table.getState().pagination]);
+    }, [sorting, columnFilters, pagination]);
 
     // 选中的日志 ID
     const selectedLogIds = table.getSelectedRowModel().rows
@@ -584,8 +598,8 @@ const LogManageIndex = () => {
                     </Table>
 
                     <TablePagination
-                        table={table}
-                        total={total}
+                        pagination={pagination}
+                        onChange={onChangePagination}
                         showSizeChanger
                         showQuickJumper
                     />
