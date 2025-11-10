@@ -19,10 +19,10 @@ import {useNavigate} from "react-router";
  * @param user
  */
 const UserSettings = (
-    {user, side = 'sidebar'}: { user?: any, side?: 'sidebar' | 'header' }
+    {side = 'sidebar'}: { side?: 'sidebar' | 'header' }
 ) => {
 
-    const {logout} = useAuth();
+    const {user, logout} = useAuth();
     const navigate = useNavigate();
     const {open, isMobile} = useSidebar();
     const [settingOpen, setSettingOpen] = useState(false)
@@ -30,20 +30,33 @@ const UserSettings = (
     return (<>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton
-                        className={'w-30'}
-                    >
-                        <Avatar className='h-7 w-7'>
+                    {open && !isMobile ? (
+                        <SidebarMenuButton
+                            className={'w-30'}
+                        >
+                            <Avatar className='h-7 w-7 cursor-pointer'>
+                                {<AvatarImage
+                                    src={user?.avatarUrl}
+                                    alt={user?.name}
+                                />}
+                                <AvatarFallback className='bg-primary text-background'>
+                                    <User size={20}/>
+                                </AvatarFallback>
+                            </Avatar>
+                            <span>{user?.name}</span>
+                        </SidebarMenuButton>
+                    ) : (
+                        <Avatar className='h-7 w-7 cursor-pointer'>
                             {<AvatarImage
                                 src={user?.avatarUrl}
-                                alt={user?.username}
+                                alt={user?.name}
                             />}
                             <AvatarFallback className='bg-primary text-background'>
                                 <User size={20}/>
                             </AvatarFallback>
                         </Avatar>
-                        <span>{user?.username}</span>
-                    </SidebarMenuButton>
+                    )}
+
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                     className="w-(--radix-dropdown-menu-trigger-width) min-w-40 rounded-lg"
@@ -54,10 +67,11 @@ const UserSettings = (
                         <DropdownMenuItem
                             onClick={() => {
                                 setSettingOpen(true)
+                                navigate('/person/settings')
                             }}
                         >
                             <Settings/>
-                            设置
+                            个人设置
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator/>

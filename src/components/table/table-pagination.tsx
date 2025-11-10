@@ -41,7 +41,7 @@ const TablePagination = <TData, >(
         showSizeChanger = false,
         showQuickJumper = false,
         defaultPageSize = 10,
-        pageSizeOptions = [2, 10, 20, 50, 100],
+        pageSizeOptions = [5, 10, 20, 50, 100],
         pagination = initPagination,
         onChange,
     }: TablePaginationProps<TData>

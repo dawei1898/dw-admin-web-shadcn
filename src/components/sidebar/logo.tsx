@@ -2,6 +2,7 @@ import React from 'react';
 import {NavLink} from "react-router";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {useSidebar} from "@/components/ui/sidebar.tsx";
+import {cn} from "@/lib/utils.ts";
 
 
 /**
@@ -13,7 +14,7 @@ const Logo = () => {
     return (
         <>
             <NavLink to='/'>
-                <div className='flex justify-center items-center gap-3'>
+                <div className={cn('flex justify-start items-center gap-3', open ? 'pl-4' : '')}>
                     <Avatar>
                         <AvatarImage src='/logo.svg' alt="DW"/>
                         <AvatarFallback>DW</AvatarFallback>

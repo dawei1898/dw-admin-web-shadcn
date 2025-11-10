@@ -11,12 +11,14 @@ import {
     SidebarMenuItem,
     SidebarMenuSub,
     SidebarMenuSubButton,
-    SidebarMenuSubItem
+    SidebarMenuSubItem,
+    useSidebar
 } from "@/components/ui/sidebar.tsx";
 import {
     Collapsible, CollapsibleContent, CollapsibleTrigger
 } from "@/components/ui/collapsible.tsx";
 import {NavLink} from "react-router";
+import {cn} from "@/lib/utils.ts";
 
 
 const menuItems = [
@@ -106,10 +108,11 @@ const menuItems = [
  * 侧边栏菜单
  */
 const NavMenus = () => {
+    const {open} = useSidebar();
+
     return (<>
         <SidebarGroup>
-            <SidebarGroupLabel>
-
+            <SidebarGroupLabel className={cn('', open ? 'h-3' : '')}>
             </SidebarGroupLabel>
             <SidebarMenu>
                 {menuItems.map((item) => (
