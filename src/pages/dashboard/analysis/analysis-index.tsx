@@ -4,6 +4,7 @@ import TableDemoPage from "@/pages/test/table/page.tsx";
 import {FieldDemo} from "@/pages/test/form/field-demo.tsx";
 import FormDemo from "@/pages/test/form/form-demo.tsx";
 import DemoTable from "@/components/table2/demo-table.tsx";
+import Sender from "@/pages/test/input/sender.tsx";
 
 /**
  * 分析页
@@ -18,6 +19,8 @@ const AnalysisIndex = () => {
 
             {/*<FieldDemo/>*/}
             {/*<FormDemo/>*/}
+
+            <Sender/>
 
             <DemoTable/>
 
