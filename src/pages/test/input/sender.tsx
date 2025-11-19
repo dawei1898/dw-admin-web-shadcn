@@ -58,7 +58,7 @@ const Sender = () => {
         // 延迟触发点击，确保 accept 属性已更新
         setTimeout(() => {
             fileInputRef.current?.click();
-        }, 0);
+        }, 10);
     };
 
 
@@ -104,8 +104,8 @@ const Sender = () => {
 
     return (
         <div className='p-4 max-w-xl mx-auto '>
-            <InputGroup className='max-h-70 rounded-xl'>
-                <InputGroupAddon align='block-start'>
+            <InputGroup className='max-h-70 py-0 rounded-xl'>
+                <InputGroupAddon align='block-start' className='pt-1 pb-0'>
                     <div className='relative'>
                         <Input
                             ref={fileInputRef}
@@ -141,7 +141,7 @@ const Sender = () => {
                                                 {fileType === 'audio' && <span className='text-xs'>🎵</span>}
                                                 {fileType === 'video' && <span className='text-xs'>🎬</span>}
                                                 {fileType === 'other' && <span className='text-xs'>📁</span>}
-                                                {/* 文件名缩略显示 */}
+                                                 {/* 文件名缩略显示 */}
                                                 <div
                                                     className=' bg-opacity-50  text-xs px-1 py-0.5'>
                                                     {file.name.length > 10 ? `${file.name.substring(0, 10)}...` : file.name}
@@ -170,11 +170,11 @@ const Sender = () => {
                     placeholder='请输入您的问题...'
                 />
 
-                <InputGroupAddon align='block-end'>
+                <InputGroupAddon align='block-end' className='pt-0'>
                     <div className='flex gap-4'>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant='ghost' size='sm'>
+                                <Button variant='ghost' size='icon-sm'>
                                     <Paperclip/>
                                 </Button>
                             </DropdownMenuTrigger>
@@ -212,8 +212,8 @@ const Sender = () => {
                         </Button>
                     </div>
 
-                    <Button variant='default' size='sm' className='ml-auto rounded-full'>
-                        <Send className='w-6 h-6' size={6}/>
+                    <Button variant='default' size='icon-sm' className='ml-auto rounded-full'>
+                        <Send/>
                     </Button>
                 </InputGroupAddon>
             </InputGroup>
