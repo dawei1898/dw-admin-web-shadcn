@@ -43,6 +43,7 @@ import {
 import type {ColumnMeta} from "@/types/table.ts";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import DeleteLogDialog from "@/pages/system/log/delete-log-dialog.tsx";
+import {useRequest} from "ahooks";
 
 
  const initSearchParams = {
@@ -77,7 +78,7 @@ const LogManageIndex = () => {
      * 初始化加载日志列表
      */
     useEffect(() => {
-            getLogList(searchParams)
+            getLogListRun(searchParams)
 
         }, [searchParams.pageNum,
             searchParams.pageSize,
@@ -111,6 +112,8 @@ const LogManageIndex = () => {
         }
     }
 
+    const { loading: searchLoading, run: getLogListRun } = useRequest( getLogList, {manual: true});
+
     // 重置搜索操作
     const handleReset = async () => {
         setSearchParams(initSearchParams)
@@ -121,8 +124,8 @@ const LogManageIndex = () => {
     }
 
     // 搜索操作
-    const handleSearch = async () => {
-        await getLogList(searchParams)
+    const handleSearch = () => {
+        getLogListRun(searchParams)
     }
 
     const onChangePagination = (pageNum: number, pageSize: number) => {
@@ -497,6 +500,7 @@ const LogManageIndex = () => {
                             className='cursor-pointer'
                             size='sm'
                             onClick={() => handleSearch()}
+                            disabled={searchLoading}
                         >
                             <Search/>
                             搜索
